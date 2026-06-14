@@ -195,30 +195,6 @@
             font-size: 12px;
         }
         
-        .binary-runner {
-            font-family: monospace;
-            font-size: 14px;
-            color: #00ffaa;
-            background: #000;
-            padding: 20px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            height: 200px;
-            overflow: hidden;
-            border: 1px solid #ffd700;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .binary-line {
-            font-family: monospace;
-            font-size: 12px;
-            line-height: 1.4;
-            text-align: center;
-        }
-        
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(4,1fr);
@@ -331,6 +307,41 @@
         .contact-btn:active {
             transform: scale(0.95);
             background: rgba(255,215,0,0.4);
+        }
+        
+        /* Пузыри для отправки в космос */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(100,200,255,0.4));
+            box-shadow: 0 0 15px rgba(100,200,255,0.8);
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.05s linear;
+            backdrop-filter: blur(5px);
+        }
+        .bubble::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 25%;
+            width: 25%;
+            height: 25%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8), transparent);
+            border-radius: 50%;
+        }
+        .bubble-pop {
+            animation: bubblePop 0.3s ease-out forwards;
+        }
+        @keyframes bubblePop {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -519,6 +530,7 @@
     <audio id="clickSound" preload="auto" style="display:none;"><source src="sounds/2.mp3" type="audio/mpeg"></audio>
     <audio id="spaceSound" preload="auto" style="display:none;"><source src="sounds/3.mp3" type="audio/mpeg"></audio>
     <audio id="slideshowMusic" preload="auto" style="display:none;"><source src="sounds/4.mp3" type="audio/mpeg"></audio>
+    <audio id="bubblePopSound" preload="auto" style="display:none;"><source src="sounds/pop.mp3" type="audio/mpeg"></audio>
 
     <script>
         // CANVAS
@@ -574,7 +586,7 @@
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.life -= 0.004; // Живут в 5 раз дольше (было 0.02)
+                this.life -= 0.004;
                 this.size *= 0.99;
             }
             draw() {
@@ -654,7 +666,6 @@
             const photo = photos[currentSlideIndex];
             const randomDream = dreams.length > 0 ? dreams[Math.floor(Math.random() * dreams.length)].text : "Твоя мечта здесь... ✨";
             
-            // Голос раз в 30 секунд
             if(audios.length > 0 && now - lastVoicePlayTime >= VOICE_INTERVAL) {
                 const randomAudio = audios[Math.floor(Math.random() * audios.length)];
                 const tempAudio = new Audio(randomAudio.data);
@@ -793,6 +804,7 @@
         function playSwipeSound() { const a=document.getElementById('swipeSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
         function playClickSound() { const a=document.getElementById('clickSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
         function playSpaceSound() { const a=document.getElementById('spaceSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
+        function playBubblePopSound() { const a=document.getElementById('bubblePopSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
 
         // АФФИРМАЦИИ
         const affirmationsMale = [
@@ -850,11 +862,97 @@
         let entropyData=[], swipeCompleted=false, mediaRecorder=null, audioChunks=[], isRecording=false;
         let userData = { key:null, name:'', gender:'male', dreams:[], photos:[], audios:[], sentToSpace:0, registered:false, audioNames:{}, spaceHistory:[], videoFile:null };
         let currentVideoURL=null;
+        
+        // Пузыри
+        let bubbles = [];
+        let bubbleSpawnInterval = null;
+        let animationId = null;
+        
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = 40 + Math.random() * 60;
+            const startX = Math.random() * (window.innerWidth - size);
+            const startY = Math.random() * (window.innerHeight - size);
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = startX + 'px';
+            bubble.style.top = startY + 'px';
+            bubble.vx = (Math.random() - 0.5) * 2;
+            bubble.vy = (Math.random() - 0.5) * 2;
+            bubble.size = size;
+            bubble.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playBubblePopSound();
+                bubble.classList.add('bubble-pop');
+                setTimeout(() => {
+                    if(bubble.parentNode) bubble.remove();
+                    bubbles = bubbles.filter(b => b !== bubble);
+                }, 300);
+            });
+            document.body.appendChild(bubble);
+            bubbles.push(bubble);
+        }
+        
+        function updateBubbles() {
+            for(let i = 0; i < bubbles.length; i++) {
+                const b = bubbles[i];
+                let left = parseFloat(b.style.left);
+                let top = parseFloat(b.style.top);
+                left += b.vx;
+                top += b.vy;
+                if(left <= 0) { left = 0; b.vx = -b.vx; }
+                if(left >= window.innerWidth - b.size) { left = window.innerWidth - b.size; b.vx = -b.vx; }
+                if(top <= 0) { top = 0; b.vy = -b.vy; }
+                if(top >= window.innerHeight - b.size) { top = window.innerHeight - b.size; b.vy = -b.vy; }
+                b.style.left = left + 'px';
+                b.style.top = top + 'px';
+                for(let j = i + 1; j < bubbles.length; j++) {
+                    const b2 = bubbles[j];
+                    const b1Left = left, b1Top = top, b1Size = b.size;
+                    const b2Left = parseFloat(b2.style.left), b2Top = parseFloat(b2.style.top), b2Size = b2.size;
+                    const dx = b1Left - b2Left;
+                    const dy = b1Top - b2Top;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const minDist = (b1Size + b2Size) / 2;
+                    if(dist < minDist) {
+                        const angle = Math.atan2(dy, dx);
+                        const overlap = minDist - dist;
+                        const moveX = Math.cos(angle) * overlap / 2;
+                        const moveY = Math.sin(angle) * overlap / 2;
+                        b.style.left = (b1Left + moveX) + 'px';
+                        b.style.top = (b1Top + moveY) + 'px';
+                        b2.style.left = (b2Left - moveX) + 'px';
+                        b2.style.top = (b2Top - moveY) + 'px';
+                        const tempVx = b.vx;
+                        const tempVy = b.vy;
+                        b.vx = b2.vx;
+                        b.vy = b2.vy;
+                        b2.vx = tempVx;
+                        b2.vy = tempVy;
+                    }
+                }
+            }
+            requestAnimationFrame(updateBubbles);
+        }
+        
+        function startBubbles() {
+            if(bubbleSpawnInterval) clearInterval(bubbleSpawnInterval);
+            bubbleSpawnInterval = setInterval(() => {
+                if(bubbles.length < 15) createBubble();
+            }, 30000);
+            updateBubbles();
+        }
+        
+        function stopBubbles() {
+            if(bubbleSpawnInterval) clearInterval(bubbleSpawnInterval);
+            bubbles.forEach(b => b.remove());
+            bubbles = [];
+        }
 
         window.addEventListener('DOMContentLoaded',()=>{
             resizeCanvas(); initBgParticles(); animateCanvas(); window.addEventListener('resize',resizeCanvas);
             
-            // Контакты
             document.getElementById('copy-tg-btn')?.addEventListener('click', () => {
                 const tgLink = document.getElementById('tg-group-link').innerText;
                 navigator.clipboard.writeText(tgLink);
@@ -882,6 +980,7 @@
                 setTimeout(() => {
                     if(currentMode === 'slideshow') playSlideshowMode();
                 }, 100);
+                startBubbles();
             }
             document.querySelectorAll('.gender-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentGender=btn.dataset.gender; updateAffirmationCarousel();});});
             document.getElementById('skipVoiceBtn')?.addEventListener('click',()=>{
@@ -893,6 +992,7 @@
                 setTimeout(() => {
                     if(currentMode === 'slideshow') playSlideshowMode();
                 }, 100);
+                startBubbles();
             });
             document.getElementById('addRandomDreamBtn')?.addEventListener('click', addRandomDream);
             document.getElementById('dynamicDreamBtn')?.addEventListener('click', addRandomDream);
@@ -999,6 +1099,7 @@
             setTimeout(() => {
                 if(currentMode === 'slideshow') playSlideshowMode();
             }, 100);
+            startBubbles();
         });
 
         function showMainScreen(){
@@ -1183,62 +1284,93 @@
             const animCanvas = document.getElementById('spaceAnimCanvas');
             const animCtx = animCanvas.getContext('2d');
             let frame = 0;
+            let matrixColumns = [];
+            let matrixDrops = [];
+            const matrixWidth = 30;
+            const matrixHeight = 30;
+            const matrixCols = Math.floor(300 / matrixWidth);
+            
+            for(let i = 0; i < matrixCols; i++) {
+                matrixColumns[i] = Math.floor(Math.random() * matrixHeight);
+            }
+            
             function drawSpaceAnim(){
-                animCtx.fillStyle = '#000'; 
+                animCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
                 animCtx.fillRect(0,0,300,300);
-                for(let i=0;i<80;i++){animCtx.fillStyle = `rgba(255,255,255,${Math.random()*0.8})`; animCtx.fillRect(Math.random()*300, Math.random()*300, 1, 1);}
-                animCtx.beginPath(); 
-                animCtx.moveTo(150,250); 
-                animCtx.lineTo(150,100); 
-                animCtx.strokeStyle = '#ffd700'; 
-                animCtx.lineWidth = 2; 
+                
+                animCtx.fillStyle = '#0f0';
+                animCtx.font = '16px monospace';
+                
+                for(let i = 0; i < matrixCols; i++) {
+                    for(let j = 0; j < 3; j++) {
+                        const char = Math.random() > 0.5 ? '1' : '0';
+                        const x = i * matrixWidth;
+                        const y = (matrixColumns[i] * matrixHeight + j * matrixHeight) % 300;
+                        if(y < 300) {
+                            animCtx.fillStyle = j === 0 ? '#0f0' : '#080';
+                            animCtx.fillText(char, x, y);
+                        }
+                    }
+                    matrixColumns[i]++;
+                    if(matrixColumns[i] * matrixHeight > 300 && Math.random() > 0.99) {
+                        matrixColumns[i] = 0;
+                    }
+                }
+                
+                animCtx.beginPath();
+                animCtx.moveTo(150, 250);
+                animCtx.lineTo(150, 120);
+                animCtx.strokeStyle = '#ffd700';
+                animCtx.lineWidth = 2;
                 animCtx.stroke();
-                for(let i=0;i<5;i++){const r = (frame*3 + i*30) % 120; animCtx.beginPath(); animCtx.arc(150,120,r+15,0,Math.PI*2); animCtx.strokeStyle = `rgba(0,255,255,${0.6 - r/200})`; animCtx.lineWidth = 1.5; animCtx.stroke();}
-                for(let i=0;i<30;i++){const x = 150 + Math.sin(frame*0.05 + i)*(frame%120); const y = 120 - (frame*1.2 + i*6)%180; const ch = Math.random() > 0.5 ? '1' : '0'; animCtx.fillStyle = `rgba(255,215,0,${1 - y/180})`; animCtx.font = '12px monospace'; animCtx.fillText(ch, x, y);}
+                
+                const waveRadius = (frame * 3) % 100;
+                animCtx.beginPath();
+                animCtx.arc(150, 130, waveRadius + 15, 0, Math.PI * 2);
+                animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 100})`;
+                animCtx.lineWidth = 1.5;
+                animCtx.stroke();
+                
                 frame++;
-                if(frame < 150) requestAnimationFrame(drawSpaceAnim);
+                if(frame < 300) requestAnimationFrame(drawSpaceAnim);
             }
             drawSpaceAnim();
             
             const runnerDiv = document.getElementById('binaryRunner');
             const statusDiv = document.getElementById('statusMessage');
-            const binaryArray = binaryCode.split(' ');
-            let idx = 0;
-            let running = '';
+            runnerDiv.style.overflowY = 'auto';
+            runnerDiv.style.height = '300px';
             
-            function animateBinary(){
-                if(idx < binaryArray.length && idx < 4){
-                    running = binaryArray[idx] + ' ' + running;
-                    if(running.length > 80) running = running.substring(0,80);
-                    runnerDiv.innerHTML = `<div class="binary-line">${running}</div><div class="binary-line" style="color:#ff6b9d;">${binaryArray[idx]} →</div>`;
-                    idx++;
-                    setTimeout(animateBinary, 100);
+            const binaryArray = binaryCode.split(' ');
+            let allBinaryHtml = '';
+            for(let i = 0; i < binaryArray.length; i++) {
+                allBinaryHtml += `<div class="binary-line">${binaryArray[i]}</div>`;
+            }
+            runnerDiv.innerHTML = allBinaryHtml;
+            runnerDiv.scrollTop = runnerDiv.scrollHeight;
+            
+            let msgIdx = 0;
+            function showMsgs(){
+                if(msgIdx < spaceMessages.length){
+                    statusDiv.innerHTML = spaceMessages[msgIdx];
+                    msgIdx++;
+                    setTimeout(showMsgs, 600);
                 } else {
-                    let msgIdx = 0;
-                    function showMsgs(){
-                        if(msgIdx < spaceMessages.length){
-                            statusDiv.innerHTML = spaceMessages[msgIdx];
-                            msgIdx++;
-                            setTimeout(showMsgs, 600);
-                        } else {
-                            setTimeout(()=>{
-                                overlay.remove();
-                                userData.sentToSpace++;
-                                document.getElementById('statSent').textContent = userData.sentToSpace;
-                                saveUserData();
-                                renderHistoryList();
-                                const time = new Date().toLocaleTimeString('ru');
-                                const randomMsg = spaceMessages[Math.floor(Math.random() * spaceMessages.length)];
-                                addSpaceLog(`🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос! ${randomMsg}`);
-                                if(navigator.vibrate) navigator.vibrate(200);
-                                alert('🌠 Мечты отправлены в космос!\n✨ Ожидайте исполнения ✨');
-                            }, 800);
-                        }
-                    }
-                    showMsgs();
+                    setTimeout(()=>{
+                        overlay.remove();
+                        userData.sentToSpace++;
+                        document.getElementById('statSent').textContent = userData.sentToSpace;
+                        saveUserData();
+                        renderHistoryList();
+                        const time = new Date().toLocaleTimeString('ru');
+                        const randomMsg = spaceMessages[Math.floor(Math.random() * spaceMessages.length)];
+                        addSpaceLog(`🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос! ${randomMsg}`);
+                        if(navigator.vibrate) navigator.vibrate(200);
+                        alert('🌠 Мечты отправлены в космос!\n✨ Ожидайте исполнения ✨');
+                    }, 800);
                 }
             }
-            animateBinary();
+            showMsgs();
         }
 
         document.getElementById('sendToSpaceBtn')?.addEventListener('click', sendToSpace);
