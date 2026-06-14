@@ -410,24 +410,29 @@
         }
         .binary-runner {
             font-family: monospace;
-            font-size: 11px;
+            font-size: 14px;
             color: #00ffaa;
             background: #000;
-            padding: 15px;
+            padding: 20px;
             border-radius: 15px;
             width: 90%;
             max-width: 500px;
             height: 200px;
-            overflow-y: auto;
+            overflow: hidden;
             border: 1px solid #ffd700;
-            margin-top: 20px;
+            position: relative;
         }
         .binary-line {
             font-family: monospace;
-            font-size: 10px;
-            line-height: 1.3;
-            margin: 2px 0;
-            word-break: break-all;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: nowrap;
+            position: absolute;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(200px); }
         }
     </style>
 </head>
@@ -1467,74 +1472,76 @@
                 <div style="margin-top:20px;color:#00ffaa;text-align:center;" id="statusMessage">⚡ Преобразование...</div>`;
             document.body.appendChild(overlay);
             
+            // Анимация антенны и волн
             const animCanvas = document.getElementById('spaceAnimCanvas');
             const animCtx = animCanvas.getContext('2d');
             let frame = 0;
-            let matrixColumns = [];
-            const matrixWidth = 20;
-            const matrixHeight = 20;
-            const matrixCols = Math.floor(300 / matrixWidth);
-            
-            for(let i = 0; i < matrixCols; i++) {
-                matrixColumns[i] = Math.floor(Math.random() * 15);
-            }
             
             function drawSpaceAnim(){
-                animCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                animCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
                 animCtx.fillRect(0,0,300,300);
                 
-                // Верхняя часть - антенна и волны
+                // Антенна
                 animCtx.beginPath();
                 animCtx.moveTo(150, 250);
-                animCtx.lineTo(150, 100);
+                animCtx.lineTo(150, 80);
                 animCtx.strokeStyle = '#ffd700';
-                animCtx.lineWidth = 2;
+                animCtx.lineWidth = 3;
                 animCtx.stroke();
                 
-                const waveRadius = (frame * 3) % 120;
-                animCtx.beginPath();
-                animCtx.arc(150, 110, waveRadius + 15, 0, Math.PI * 2);
-                animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 120})`;
-                animCtx.lineWidth = 1.5;
-                animCtx.stroke();
+                // Волны
+                for(let i=0;i<4;i++){
+                    const waveRadius = (frame * 3 + i * 40) % 100;
+                    animCtx.beginPath();
+                    animCtx.arc(150, 90, waveRadius + 20, 0, Math.PI * 2);
+                    animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 100})`;
+                    animCtx.lineWidth = 1.5;
+                    animCtx.stroke();
+                }
                 
-                // Нижняя часть - матричный дождь из 0 и 1
-                animCtx.fillStyle = '#0f0';
-                animCtx.font = '12px monospace';
-                
-                for(let i = 0; i < matrixCols; i++) {
-                    for(let j = 0; j < 2; j++) {
-                        const char = Math.random() > 0.5 ? '1' : '0';
-                        const x = i * matrixWidth;
-                        const y = 180 + (matrixColumns[i] * matrixHeight + j * matrixHeight) % 120;
-                        if(y >= 180 && y < 300) {
-                            animCtx.fillStyle = j === 0 ? '#0f0' : '#080';
-                            animCtx.fillText(char, x, y);
-                        }
-                    }
-                    matrixColumns[i]++;
-                    if(matrixColumns[i] * matrixHeight > 120 && Math.random() > 0.99) {
-                        matrixColumns[i] = 0;
-                    }
+                // Сигнал вокруг антенны
+                for(let i=0;i<8;i++){
+                    const angle = frame * 0.1 + i * Math.PI / 4;
+                    const x = 150 + Math.cos(angle) * 30;
+                    const y = 90 + Math.sin(angle) * 30;
+                    const dotSize = 3 + Math.sin(frame * 0.2 + i) * 2;
+                    animCtx.fillStyle = `hsl(${frame * 10 + i * 45}, 100%, 60%)`;
+                    animCtx.beginPath();
+                    animCtx.arc(x, y, dotSize, 0, Math.PI * 2);
+                    animCtx.fill();
                 }
                 
                 frame++;
-                if(frame < 300) requestAnimationFrame(drawSpaceAnim);
+                if(frame < 150) requestAnimationFrame(drawSpaceAnim);
             }
             drawSpaceAnim();
             
+            // Матричный дождь в рамке
             const runnerDiv = document.getElementById('binaryRunner');
             const statusDiv = document.getElementById('statusMessage');
-            runnerDiv.style.overflowY = 'auto';
-            runnerDiv.style.height = '200px';
+            runnerDiv.innerHTML = '';
+            runnerDiv.style.position = 'relative';
+            runnerDiv.style.overflow = 'hidden';
             
             const binaryArray = binaryCode.split(' ');
-            let allBinaryHtml = '';
-            for(let i = 0; i < binaryArray.length; i++) {
-                allBinaryHtml += `<div class="binary-line">${binaryArray[i]}</div>`;
+            const columns = Math.floor(runnerDiv.clientWidth / 20);
+            let fallingChars = [];
+            
+            for(let i = 0; i < 50; i++) {
+                const charDiv = document.createElement('div');
+                charDiv.className = 'binary-line';
+                const randomBinary = binaryArray[Math.floor(Math.random() * binaryArray.length)] || '0';
+                charDiv.textContent = randomBinary;
+                charDiv.style.position = 'absolute';
+                charDiv.style.left = Math.random() * 100 + '%';
+                charDiv.style.top = '-20px';
+                charDiv.style.animationDuration = 1 + Math.random() * 2 + 's';
+                charDiv.style.animationDelay = Math.random() * 5 + 's';
+                charDiv.style.opacity = 0.3 + Math.random() * 0.7;
+                charDiv.style.color = Math.random() > 0.9 ? '#0f0' : '#080';
+                runnerDiv.appendChild(charDiv);
+                fallingChars.push(charDiv);
             }
-            runnerDiv.innerHTML = allBinaryHtml;
-            runnerDiv.scrollTop = runnerDiv.scrollHeight;
             
             let msgIdx = 0;
             function showMsgs(){
