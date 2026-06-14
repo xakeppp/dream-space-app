@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🌠 Космическая мечта — частота счастья</title>
-    <link rel="stylesheet" href="style.css">
     <style>
         * {
             margin: 0;
@@ -263,205 +262,103 @@
             margin-bottom: 15px;
             border: 2px solid rgba(255,215,0,0.3);
         }
-        
-        .video-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            background: rgba(0,0,0,0.7);
-            border-radius: 30px;
-            margin-top: 5px;
-        }
-        .volume-slider {
-            flex: 1;
-            height: 4px;
-            -webkit-appearance: none;
-            background: rgba(255,255,255,0.3);
-            border-radius: 5px;
-        }
-        .volume-slider::-webkit-slider-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #ffd700;
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-        .mute-btn, .play-pause-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #ffd700;
-            padding: 5px;
-        }
-        
-        .slide-content {
-            position: relative;
+        .affirmation-video {
             width: 100%;
-            height: 100%;
+            display: block;
             background: #000;
         }
-        .slide-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .video-controls { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(0,0,0,0.7); flex-wrap: wrap; }
+        .volume-slider { flex: 1; height: 4px; -webkit-appearance: none; background: rgba(255,255,255,0.3); border-radius: 5px; }
+        .volume-slider::-webkit-slider-thumb { width: 16px; height: 16px; border-radius: 50%; background: #ffd700; cursor: pointer; -webkit-appearance: none; }
+        .mute-btn, .play-pause-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #ffd700; margin: 0 5px; }
+        .select-video-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-top: 0; }
+        .refresh-slideshow-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-left: 5px; }
+
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: nowrap;
         }
-        .slide-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 15px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        .mode-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 30px;
             text-align: center;
+            cursor: pointer;
+            font-size: 12px;
         }
-        .slide-text {
-            color: #ffd700;
-            font-size: 16px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px #000;
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ff6b9d);
+            border-color: #ffd700;
         }
-        
-        .full-text-modal {
+
+        .space-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.95);
-            z-index: 20000;
+            z-index: 10000;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
-        .full-text-content {
-            background: rgba(30,30,50,0.95);
-            border-radius: 20px;
-            padding: 20px;
-            max-width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-            border: 2px solid #ffd700;
-        }
-        .full-text-content p {
-            color: #ffd700;
-            font-size: 16px;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-        .close-modal-btn {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: #ff6b9d;
-            border: none;
-            border-radius: 30px;
-            color: white;
-            cursor: pointer;
-        }
-        
-        .history-item {
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-        .history-item .full-text-btn {
-            background: rgba(255,215,0,0.2);
-            border: 1px solid #ffd700;
-            border-radius: 15px;
-            padding: 4px 12px;
-            font-size: 11px;
-            cursor: pointer;
-            margin-left: 10px;
-            color: #ffd700;
-        }
-        .view-binary-btn {
-            background: rgba(0,255,170,0.2);
-            border: 1px solid #00ffaa;
-            border-radius: 15px;
-            padding: 4px 12px;
-            font-size: 11px;
-            cursor: pointer;
-            margin-left: 10px;
-            color: #00ffaa;
-        }
-        .history-binary {
+        .binary-runner {
             font-family: monospace;
-            font-size: 10px;
+            font-size: 14px;
             color: #00ffaa;
-            margin-top: 8px;
-            word-break: break-all;
-            max-height: 100px;
+            background: #000;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            height: 200px;
             overflow-y: auto;
-            background: rgba(0,0,0,0.3);
-            padding: 8px;
-            border-radius: 8px;
+            border: 1px solid #ffd700;
         }
+        .binary-line { font-family: monospace; font-size: 12px; line-height: 1.4; margin: 2px 0; }
+        .space-animation-canvas { width: 300px; height: 300px; margin-bottom: 20px; }
+
+        .affirmation-carousel { min-height: 80px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-top: 10px; text-align: center; font-size: 16px; line-height: 1.4; }
         
-        .space-log-message {
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 12px;
-        }
+        .double-buttons { display: flex; gap: 10px; margin-top: 15px; flex-direction: column; }
+        .double-buttons .btn { margin-top: 0; width: 100%; }
+
+        .key-copy { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .key-copy p { flex: 1; font-family: monospace; font-size: 11px; word-break: break-all; color: #ffd700; }
+        .copy-btn { background: rgba(255,215,0,0.2); border: 1px solid #ffd700; border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; color: #ffd700; }
+        .paste-area { margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .paste-area input { flex: 1; margin: 0; padding: 8px; font-size: 11px; }
+        .paste-area button { margin: 0; padding: 8px 12px; width: auto; }
         
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(4,1fr);
-            gap: 8px;
-            margin-top: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
+        .history-binary { font-family: monospace; font-size: 10px; color: #00ffaa; margin-top: 8px; word-break: break-all; max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; }
+        .view-binary-btn { background: rgba(0,255,170,0.2); border: 1px solid #00ffaa; border-radius: 15px; padding: 4px 12px; font-size: 11px; cursor: pointer; margin-left: 10px; }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
+        .skip-hint { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 15px; cursor: pointer; }
+        .skip-hint:hover { color: #ffd700; }
         
-        .double-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-direction: column;
-        }
+        .space-log-message { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 12px; }
         
-        .double-buttons .btn {
-            margin-top: 0;
+        .dynamic-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #ffd700;
+            border-radius: 30px;
+            padding: 12px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ffd700;
             width: 100%;
         }
-        
-        .affirmation-carousel {
-            min-height: 80px;
-            padding: 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 16px;
-            line-height: 1.4;
-        }
-        
-        .record-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .audio-list, .dreams-list, .history-list {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        /* Контакты */
+        .dynamic-btn:active { transform: scale(0.97); background: rgba(255,215,0,0.2); }
+
         .contacts-card {
             background: rgba(255,255,255,0.08);
             backdrop-filter: blur(10px);
@@ -522,6 +419,23 @@
             background: rgba(255,215,0,0.4);
         }
         
+        .counter-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .counter-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .counter-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+        
         /* Пузыри */
         .bubble {
             position: absolute;
@@ -551,7 +465,6 @@
             100% { transform: scale(2); opacity: 0; }
         }
         
-        /* Золотой шарик */
         .golden-ball {
             position: absolute;
             border-radius: 50%;
@@ -583,65 +496,6 @@
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.3); background: radial-gradient(circle at 30% 30%, #ffaa00, #ff6600); }
             100% { transform: scale(2); opacity: 0; }
-        }
-        
-        .counter-card {
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
-            padding: 12px;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .counter-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #ffd700;
-        }
-        .counter-label {
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-        }
-        
-        /* Стили для отправки в космос */
-        .space-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .space-animation-canvas {
-            width: 300px;
-            height: 300px;
-            margin-bottom: 20px;
-        }
-        .binary-runner {
-            font-family: monospace;
-            font-size: 16px;
-            font-weight: bold;
-            color: #0f0;
-            background: #000;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            height: 200px;
-            border: 2px solid #ffd700;
-            position: relative;
-            overflow: hidden;
-        }
-        .falling-digit {
-            position: absolute;
-            font-family: monospace;
-            font-size: 14px;
-            font-weight: bold;
-            pointer-events: none;
-            white-space: nowrap;
         }
     </style>
 </head>
@@ -695,18 +549,18 @@
         <h1>🌌 <span id="mainUserName">Путник</span></h1>
         
         <div class="card">
-            <div class="mode-line">
-                <div class="mode-btn" data-mode="slideshow">🎞️ Слайдшоу</div>
+            <div class="mode-switch">
+                <div class="mode-btn active" data-mode="slideshow">🎞️ Слайдшоу</div>
                 <div class="mode-btn" data-mode="video">🎬 Моё видео</div>
                 <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
             </div>
             <div id="videoContainer" class="video-container">
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column; width: 100%; height: 100%;">
                     <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Слайдшоу из ваших фото</p>
                     <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Добавьте фото в галерею</p>
                 </div>
             </div>
-            <div class="video-controls" id="videoControls">
+            <div class="video-controls" id="videoControls" style="display: none;">
                 <button class="play-pause-btn" id="playPauseBtn">⏸️</button>
                 <button class="mute-btn" id="muteBtn">🔊</button>
                 <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
@@ -792,7 +646,6 @@
                 </div>
             </div>
             
-            <!-- Контакты -->
             <div class="contacts-card">
                 <div class="contact-title-block">📞 ПОМОЩЬ ПУТНИКУ</div>
                 <div class="contact-item">
@@ -816,7 +669,6 @@
                 </div>
             </div>
             
-            <!-- Счетчики пузырей -->
             <div class="counter-card">
                 <div class="counter-value" id="bubbleCounter">0</div>
                 <div class="counter-label">💧 Лопнутых пузырей</div>
@@ -888,17 +740,17 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 1.5;
-                this.vy = (Math.random() - 0.5) * 1.5 - 0.5;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2 - 1;
                 this.life = 1.0;
-                this.size = Math.random() * 10 + 5;
+                this.size = Math.random() * 8 + 4;
                 this.color = `hsl(${Math.random() * 60 + 40}, 100%, 60%)`;
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
                 this.life -= 0.004;
-                this.size *= 0.99;
+                this.size *= 0.97;
             }
             draw() {
                 ctx.beginPath();
@@ -944,7 +796,7 @@
             
             slideshowMusic = document.getElementById('slideshowMusic');
             if(slideshowMusic && !musicPlaying && currentMode === 'slideshow') {
-                slideshowMusic.volume = parseFloat(document.getElementById('volumeSlider').value);
+                slideshowMusic.volume = 0.5;
                 slideshowMusic.loop = true;
                 slideshowMusic.play().catch(e=>console.log('music play blocked'));
                 musicPlaying = true;
@@ -961,6 +813,7 @@
         function updateSlide() {
             const container = document.getElementById('videoContainer');
             if(!container) return;
+            if(container.querySelector('video')) return;
             if(currentMode !== 'slideshow') return;
             
             const photos = userData.photos || [];
@@ -969,7 +822,7 @@
             const now = Date.now();
             
             if(photos.length === 0) {
-                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
                 return;
             }
             
@@ -977,6 +830,7 @@
             const photo = photos[currentSlideIndex];
             const randomDream = dreams.length > 0 ? dreams[Math.floor(Math.random() * dreams.length)].text : "Твоя мечта здесь... ✨";
             
+            // Голос раз в 30 секунд
             if(audios.length > 0 && now - lastVoicePlayTime >= VOICE_INTERVAL) {
                 const randomAudio = audios[Math.floor(Math.random() * audios.length)];
                 const tempAudio = new Audio(randomAudio.data);
@@ -986,27 +840,63 @@
             }
             
             container.innerHTML = `
-                <div class="slide-content">
-                    <img src="${photo.data}" class="slide-image">
-                    <div class="slide-overlay">
-                        <div class="slide-text">${escapeHtml(randomDream)}</div>
+                <div style="position: relative; width: 100%; min-height: 350px; background: #000;">
+                    <img src="${photo.data}" style="width: 100%; height: auto; min-height: 350px; object-fit: cover; opacity: 0.7;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; background: rgba(0,0,0,0.3);">
+                        <p style="color: #ffd700; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; max-width: 90%;">${escapeHtml(randomDream)}</p>
                     </div>
                 </div>
             `;
         }
         
-        function playVideo(fileUrl) {
-            const container = document.getElementById('videoContainer');
-            if(!container) return;
-            
-            container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${fileUrl}" loop autoplay style="width:100%; height:100%; object-fit:cover;"></video>`;
-            currentVideo = document.getElementById('affirmationVideo');
-            
-            if(currentVideo) {
-                currentVideo.play().catch(e=>console.log('video play error', e));
+        function refreshSlideshow() {
+            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) {
+                updateSlide();
             }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                if(btn.dataset.mode === mode) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
             
-            const video = currentVideo;
+            if(mode === 'slideshow') {
+                const container = document.getElementById('videoContainer');
+                if(container.querySelector('video')) {
+                    const video = container.querySelector('video');
+                    if(video) video.pause();
+                    container.innerHTML = '';
+                    slideshowActive = true;
+                    startSlideshow();
+                } else if(slideshowActive) {
+                    startSlideshow();
+                }
+                if(slideshowMusic && !musicPlaying) {
+                    slideshowMusic.play().catch(e=>console.log('music play blocked'));
+                    musicPlaying = true;
+                }
+            } else if(mode === 'video') {
+                stopSlideshow();
+                if(slideshowMusic && musicPlaying) {
+                    slideshowMusic.pause();
+                    musicPlaying = false;
+                }
+                const container = document.getElementById('videoContainer');
+                if(!container.querySelector('video') && userData.videoFile) {
+                    container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${userData.videoFile}" loop autoplay style="width:100%"></video>`;
+                    document.getElementById('videoControls').style.display = 'flex';
+                    const video = document.getElementById('affirmationVideo');
+                    setupVideoControls(video);
+                } else if(!userData.videoFile) {
+                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
+                    document.getElementById('selectVideoBtnModal')?.addEventListener('click', handleSelectVideo);
+                }
+            }
+        }
+        
+        function setupVideoControls(video) {
             const volSlider = document.getElementById('volumeSlider');
             const volPercent = document.getElementById('volumePercent');
             const muteBtn = document.getElementById('muteBtn');
@@ -1042,74 +932,6 @@
                 }
                 isPlaying = !isPlaying;
             };
-        }
-
-        function playSlideshowMode() {
-            const container = document.getElementById('videoContainer');
-            if(!container) return;
-            
-            const photos = userData.photos || [];
-            
-            if(photos.length === 0) {
-                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
-                return;
-            }
-            
-            if(slideshowInterval) clearInterval(slideshowInterval);
-            updateSlide();
-            slideshowInterval = setInterval(updateSlide, 500);
-            
-            slideshowMusic = document.getElementById('slideshowMusic');
-            if(slideshowMusic && !musicPlaying) {
-                slideshowMusic.volume = parseFloat(document.getElementById('volumeSlider').value);
-                slideshowMusic.loop = true;
-                slideshowMusic.play().catch(e=>console.log('music play blocked'));
-                musicPlaying = true;
-            }
-        }
-
-        function switchMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                if(btn.dataset.mode === mode) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            
-            if(mode === 'slideshow') {
-                if(currentVideo) {
-                    currentVideo.pause();
-                    currentVideo = null;
-                }
-                playSlideshowMode();
-                const volSlider = document.getElementById('volumeSlider');
-                const muteBtn = document.getElementById('muteBtn');
-                if(volSlider) {
-                    volSlider.oninput = () => {
-                        if(slideshowMusic) slideshowMusic.volume = parseFloat(volSlider.value);
-                        document.getElementById('volumePercent').textContent = Math.round(parseFloat(volSlider.value) * 100) + '%';
-                    };
-                    muteBtn.onclick = () => {
-                        if(slideshowMusic) {
-                            slideshowMusic.muted = !slideshowMusic.muted;
-                            muteBtn.textContent = slideshowMusic.muted ? '🔇' : '🔊';
-                        }
-                    };
-                }
-            } else if(mode === 'video') {
-                if(slideshowInterval) clearInterval(slideshowInterval);
-                if(slideshowMusic && musicPlaying) {
-                    slideshowMusic.pause();
-                    musicPlaying = false;
-                }
-                
-                if(userData.videoFile) {
-                    playVideo(userData.videoFile);
-                } else {
-                    const container = document.getElementById('videoContainer');
-                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
-                    document.getElementById('selectVideoBtnModal')?.addEventListener('click', handleSelectVideo);
-                }
-            }
         }
 
         function playSwipeSound() { const a=document.getElementById('swipeSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
@@ -1376,7 +1198,7 @@
                 startAffirmationCarousel();
                 slideshowActive = true;
                 setTimeout(() => {
-                    if(currentMode === 'slideshow') playSlideshowMode();
+                    if(currentMode === 'slideshow') startSlideshow();
                 }, 100);
                 startBubbles();
             }
@@ -1388,7 +1210,7 @@
                 startAffirmationCarousel();
                 slideshowActive = true;
                 setTimeout(() => {
-                    if(currentMode === 'slideshow') playSlideshowMode();
+                    if(currentMode === 'slideshow') startSlideshow();
                 }, 100);
                 startBubbles();
             });
@@ -1495,7 +1317,7 @@
             startAffirmationCarousel();
             slideshowActive = true;
             setTimeout(() => {
-                if(currentMode === 'slideshow') playSlideshowMode();
+                if(currentMode === 'slideshow') startSlideshow();
             }, 100);
             startBubbles();
         });
@@ -1556,12 +1378,13 @@
             document.getElementById('statDreams').textContent=userData.dreams.length; 
             saveUserData(); 
             renderDreamsList();
+            if(currentMode === 'slideshow') refreshSlideshow();
             alert('✨ Мечта сохранена!');
         }
         document.getElementById('addDreamBtn')?.addEventListener('click',addDream);
-
-        function editDream(id){const dream=userData.dreams.find(d=>d.id===id); if(!dream)return; const newText=prompt('Редактировать мечту:',dream.text); if(newText&&newText.trim()){dream.text=newText.trim(); saveUserData(); renderDreamsList();}}
-        function deleteDream(id){if(confirm('Удалить мечту?')){userData.dreams=userData.dreams.filter(d=>d.id!==id); saveUserData(); renderDreamsList(); document.getElementById('statDreams').textContent=userData.dreams.length;}}
+        
+        function editDream(id){const dream=userData.dreams.find(d=>d.id===id); if(!dream)return; const newText=prompt('Редактировать мечту:',dream.text); if(newText&&newText.trim()){dream.text=newText.trim(); saveUserData(); renderDreamsList(); if(currentMode === 'slideshow') refreshSlideshow();}}
+        function deleteDream(id){if(confirm('Удалить мечту?')){userData.dreams=userData.dreams.filter(d=>d.id!==id); saveUserData(); renderDreamsList(); document.getElementById('statDreams').textContent=userData.dreams.length; if(currentMode === 'slideshow') refreshSlideshow();}}
         function renderDreamsList(){
             const container=document.getElementById('dreamsList'); 
             if(!container)return; 
@@ -1572,9 +1395,9 @@
 
         function addPhotos(event){
             const files=Array.from(event.target.files); 
-            files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos();}; reader.readAsDataURL(file);});
+            files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos(); if(currentMode === 'slideshow') refreshSlideshow();}; reader.readAsDataURL(file);});
         }
-        function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos();}
+        function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos(); if(currentMode === 'slideshow') refreshSlideshow();}
         function renderPhotos(){
             const grid=document.getElementById('photoGrid'); 
             if(!grid)return; 
@@ -1598,7 +1421,7 @@
                         if(btn.dataset.mode === 'video') btn.classList.add('active');
                         else btn.classList.remove('active');
                     });
-                    playVideo(currentVideoURL);
+                    switchMode('video');
                 }
             };
             input.click();
@@ -1679,39 +1502,19 @@
                 <div style="margin-top:20px;color:#00ffaa;text-align:center;" id="statusMessage">⚡ Преобразование...</div>`;
             document.body.appendChild(overlay);
             
-            // Анимация антенны с брызгами и кляксами
+            // Анимация антенны (как было раньше)
             const animCanvas = document.getElementById('spaceAnimCanvas');
             const animCtx = animCanvas.getContext('2d');
             let frame = 0;
-            let particles = [];
-            
-            // Кляксы
-            let blobs = [];
-            for(let i=0;i<8;i++){
-                blobs.push({
-                    x: Math.random() * 300,
-                    y: Math.random() * 300,
-                    radius: 5 + Math.random() * 15,
-                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-                    vx: (Math.random() - 0.5) * 2,
-                    vy: (Math.random() - 0.5) * 2
-                });
-            }
             
             function drawSpaceAnim(){
-                animCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                animCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
                 animCtx.fillRect(0,0,300,300);
                 
-                // Кляксы
-                for(let b of blobs){
-                    animCtx.beginPath();
-                    animCtx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                    animCtx.fillStyle = b.color;
-                    animCtx.fill();
-                    b.x += b.vx;
-                    b.y += b.vy;
-                    if(b.x < 0 || b.x > 300) b.vx = -b.vx;
-                    if(b.y < 0 || b.y > 300) b.vy = -b.vy;
+                // Звёзды
+                for(let i=0;i<100;i++){
+                    animCtx.fillStyle = `rgba(255,255,255,${Math.random()*0.8})`;
+                    animCtx.fillRect(Math.random()*300, Math.random()*300, 1, 1);
                 }
                 
                 // Антенна
@@ -1719,47 +1522,28 @@
                 animCtx.moveTo(150, 250);
                 animCtx.lineTo(150, 80);
                 animCtx.strokeStyle = '#ffd700';
-                animCtx.lineWidth = 3;
+                animCtx.lineWidth = 2;
                 animCtx.stroke();
                 
                 // Волны
                 for(let i=0;i<5;i++){
-                    const waveRadius = (frame * 2 + i * 40) % 100;
+                    const waveRadius = (frame * 3 + i * 40) % 120;
                     animCtx.beginPath();
-                    animCtx.arc(150, 90, waveRadius + 20, 0, Math.PI * 2);
-                    animCtx.strokeStyle = `rgba(0,255,255,${0.8 - waveRadius / 100})`;
-                    animCtx.lineWidth = 2;
+                    animCtx.arc(150, 90, waveRadius + 15, 0, Math.PI * 2);
+                    animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 120})`;
+                    animCtx.lineWidth = 1.5;
                     animCtx.stroke();
                 }
                 
-                // Брызги от антенны
-                if(frame % 3 === 0){
-                    for(let i=0;i<6;i++){
-                        particles.push({
-                            x: 150 + (Math.random() - 0.5) * 40,
-                            y: 90 + (Math.random() - 0.5) * 40,
-                            vx: (Math.random() - 0.5) * 4,
-                            vy: (Math.random() - 0.5) * 4 - 2,
-                            life: 1,
-                            color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-                            size: 3 + Math.random() * 5
-                        });
-                    }
-                }
-                
-                // Рисуем брызги
-                for(let i=particles.length-1;i>=0;i--){
-                    let p = particles[i];
-                    animCtx.beginPath();
-                    animCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-                    animCtx.fillStyle = p.color;
-                    animCtx.fill();
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.life -= 0.02;
-                    if(p.life <= 0 || p.y > 300 || p.x < 0 || p.x > 300){
-                        particles.splice(i,1);
-                    }
+                // Вращающиеся частицы
+                for(let i=0;i<12;i++){
+                    const angle = frame * 0.1 + i * Math.PI / 6;
+                    const x = 150 + Math.cos(angle) * 40;
+                    const y = 90 + Math.sin(angle) * 40;
+                    const char = Math.random() > 0.5 ? '1' : '0';
+                    animCtx.fillStyle = `hsl(${angle * 180 / Math.PI}, 100%, 60%)`;
+                    animCtx.font = '12px monospace';
+                    animCtx.fillText(char, x, y);
                 }
                 
                 frame++;
@@ -1767,42 +1551,19 @@
             }
             drawSpaceAnim();
             
-            // Матричный дождь из отдельных цифр
+            // Бинарный код в рамке
             const runnerDiv = document.getElementById('binaryRunner');
             const statusDiv = document.getElementById('statusMessage');
-            runnerDiv.innerHTML = '';
+            runnerDiv.style.overflowY = 'auto';
+            runnerDiv.style.height = '200px';
             
-            const binaryDigits = binaryCode.replace(/ /g, '').split('');
-            const digits = binaryDigits.length > 0 ? binaryDigits : ['0','1','0','1'];
-            
-            // Создаём падающие цифры
-            for(let i = 0; i < 80; i++){
-                const digitSpan = document.createElement('div');
-                digitSpan.className = 'falling-digit';
-                const randomDigit = digits[Math.floor(Math.random() * digits.length)];
-                digitSpan.textContent = randomDigit;
-                digitSpan.style.left = Math.random() * 100 + '%';
-                digitSpan.style.top = Math.random() * -50 + 'px';
-                digitSpan.style.animation = `fall ${0.8 + Math.random() * 1.5}s linear infinite`;
-                digitSpan.style.animationDelay = Math.random() * 5 + 's';
-                digitSpan.style.opacity = 0.3 + Math.random() * 0.7;
-                digitSpan.style.color = `hsl(${Math.random() * 60 + 100}, 100%, 50%)`;
-                digitSpan.style.fontSize = (12 + Math.random() * 8) + 'px';
-                runnerDiv.appendChild(digitSpan);
+            const binaryArray = binaryCode.split(' ');
+            let allBinaryHtml = '';
+            for(let i = 0; i < binaryArray.length; i++) {
+                allBinaryHtml += `<div class="binary-line">${binaryArray[i]}</div>`;
             }
-            
-            // Добавляем стиль анимации
-            if(!document.getElementById('fall-style')){
-                const style = document.createElement('style');
-                style.id = 'fall-style';
-                style.textContent = `
-                    @keyframes fall {
-                        from { transform: translateY(-100px); }
-                        to { transform: translateY(300px); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
+            runnerDiv.innerHTML = allBinaryHtml;
+            runnerDiv.scrollTop = runnerDiv.scrollHeight;
             
             let msgIdx = 0;
             function showMsgs(){
