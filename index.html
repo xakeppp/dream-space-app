@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🌠 Космическая мечта — твоя частота счастья</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        #magicCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffd700, #ff6b9d, #c06fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        #swipeArea {
+            width: 100%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: crosshair;
+            touch-action: none;
+            position: relative;
+        }
+
+        #swipeArea.swiping {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .swipe-text {
+            font-size: 18px;
+            color: #ffd700;
+            text-align: center;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .entropy-bar {
+            width: 80%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .entropy-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b9d, #ffd700, #c06fff);
+            transition: width 0.1s linear;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06fff 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 20px rgba(192, 111, 255, 0.4);
+            transition: transform 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 215, 0, 0.5); }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus { border-color: #ffd700; }
+        input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.5); }
+
+        .record-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%);
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            margin: 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .record-btn.recording {
+            background: linear-gradient(135deg, #ff4757 0%, #c0392b 100%);
+            animation: pulse 1s infinite;
+            box-shadow: 0 0 40px rgba(255, 71, 87, 0.8);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .audio-list { margin-top: 20px; }
+        .audio-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            transition: color 0.3s;
+        }
+        .tab-item.active { color: #ffd700; }
+        .tab-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        .stat-value { font-size: 24px; font-weight: bold; color: #ffd700; }
+        .stat-label { font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 5px; }
+
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
+        .photo-item { aspect-ratio: 1; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; position: relative; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .add-photo {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; color: rgba(255, 215, 0, 0.5); cursor: pointer;
+            border: 2px dashed rgba(255, 215, 0, 0.3);
+        }
+        .hidden { display: none !important; }
+        .progress-text { text-align: center; margin-top: 10px; color: #ffd700; font-size: 14px; font-weight: 600; }
+
+        .dream-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        /* Видео плеер */
+        .video-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        
+        .affirmation-video {
+            width: 100%;
+            display: block;
+            background: #000;
+        }
+        
+        .video-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+        }
+        
+        .volume-slider {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .mute-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ffd700;
+        }
+        
+        .select-video-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px dashed #ffd700;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+            width: auto;
+            margin-top: 0;
+        }
+        
+        /* Анимация отправки */
+        .space-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .binary-runner {
+            font-family: monospace;
+            font-size: 14px;
+            color: #00ffaa;
+            background: #000;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #ffd700;
+        }
+        
+        .binary-line {
+            white-space: pre;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="magicCanvas"></canvas>
+
+    <!-- ЭКРАН 1: ПРОБУЖДЕНИЕ -->
+    <div id="screen-swipe" class="screen active">
+        <h1>✨ Пробуждение ✨</h1>
+        <div class="card">
+            <p style="text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.8);">
+                🌌 Настрой свою уникальную частоту счастья.<br>
+                Води пальцем внутри рамки, создавай хаос.
+            </p>
+            <div id="swipeArea">
+                <div class="swipe-text">👆 Води пальцем здесь</div>
+                <div class="entropy-bar">
+                    <div id="entropyFill" class="entropy-fill"></div>
+                </div>
+                <div class="progress-text" id="entropyText">0% настроено</div>
+            </div>
+        </div>
+        <button class="btn" id="btnToProfile" disabled>Далее →</button>
+    </div>
+
+    <!-- ЭКРАН 2: АНКЕТА ДУШИ -->
+    <div id="screen-profile" class="screen">
+        <h1>🌟 Анкета Души</h1>
+        <div class="card">
+            <h2>👤 Как тебя зовут?</h2>
+            <input type="text" id="userName" placeholder="Твоё имя">
+            <h2>🎂 Дата рождения</h2>
+            <input type="date" id="userBirth">
+            <h2>🏙️ Город рождения</h2>
+            <input type="text" id="userCity" placeholder="Где ты появился на свет">
+        </div>
+        <button class="btn" id="btnToVoice">Далее →</button>
+    </div>
+
+    <!-- ЭКРАН 3: ГОЛОС МЕЧТЫ -->
+    <div id="screen-voice" class="screen">
+        <h1>🎤 Голос Мечты</h1>
+        <div class="card">
+            <p style="text-align: center; color: rgba(255,255,255,0.8);">
+                Надиктуй свои самые смелые мечты.<br>
+                Твой голос — это частота, которая полетит в космос 🚀
+            </p>
+            <div class="record-btn" id="recordBtn">🎙️</div>
+            <p style="text-align: center; color: rgba(255,255,255,0.6);" id="recordStatus">Нажми, чтобы начать запись</p>
+            <div class="audio-list" id="audioList"></div>
+        </div>
+        <button class="btn" id="btnToMain">Войти в приложение 🚀</button>
+    </div>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <div id="screen-main" class="screen">
+        <h1>🌌 <span id="mainUserName">Путник</span></h1>
+        
+        <!-- Видео аффирмация -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h2 style="margin-bottom: 0;">🎬 Видео-аффирмация</h2>
+                <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать видео</button>
+            </div>
+            <div id="videoContainer" class="video-container" style="min-height: 200px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
+                <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Выберите видео-аффирмацию<br>MP4 файл</p>
+            </div>
+            <div class="video-controls" style="display: none;" id="videoControls">
+                <button class="mute-btn" id="muteBtn">🔊</button>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.7">
+                <span id="volumePercent" style="font-size: 12px; color: rgba(255,255,255,0.7);">70%</span>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="statDreams">0</div>
+                <div class="stat-label">⭐ Мечт</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statSent">0</div>
+                <div class="stat-label">🚀 Отправлено в космос</div>
+            </div>
+        </div>
+
+        <div id="tab-home" class="tab-content">
+            <div class="card">
+                <h2>✨ Аффирмация дня</h2>
+                <p id="dailyAffirmation" style="font-size: 18px; line-height: 1.6; text-align: center; padding: 20px 0;">Загрузка...</p>
+                <button class="btn" onclick="generateAffirmation()">🔄 Новая аффирмация</button>
+            </div>
+        </div>
+
+        <div id="tab-dreams" class="tab-content hidden">
+            <div class="card">
+                <h2>💭 Мои мечты</h2>
+                <textarea id="dreamText" rows="3" placeholder="Опиши свою мечту..."></textarea>
+                <button class="btn" onclick="addDream()">➕ Добавить мечту</button>
+                <div id="dreamsList" style="margin-top: 20px;"></div>
+                <h2 style="margin-top: 20px;">🖼️ Галерея мечты</h2>
+                <div class="photo-grid" id="photoGrid">
+                    <label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display: none;" onchange="addPhotos(event)"></label>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-voice" class="tab-content hidden">
+            <div class="card">
+                <h2>🎤 Мои записи</h2>
+                <div class="record-btn" id="recordBtnMain" style="width: 80px; height: 80px; font-size: 35px;">🎙️</div>
+                <div class="audio-list" id="audioListMain"></div>
+            </div>
+        </div>
+
+        <div id="tab-space" class="tab-content hidden">
+            <div class="card">
+                <h2>🚀 Отправка в Космос</h2>
+                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 20px;">Нажми на кнопку — твои мечты превратятся в 1 и 0 и улетят в бесконечность.</p>
+                <button class="btn" id="sendToSpaceBtn">🌠 Отправить мечты в космос</button>
+                <div id="spaceLog" style="margin-top: 20px; font-size: 13px; color: rgba(255,255,255,0.6);"></div>
+            </div>
+        </div>
+
+        <div id="tab-profile" class="tab-content hidden">
+            <div class="card">
+                <h2>🔐 Страховка души</h2>
+                <input type="email" id="userEmail" placeholder="your@email.com">
+                <button class="btn btn-secondary" onclick="saveEmail()">💾 Сохранить ключ на почте</button>
+                <button class="btn btn-secondary" onclick="exportProfile()">💾 Скачать резервную копию</button>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importProfile(this.files[0])">
+                <button class="btn btn-secondary" onclick="document.getElementById('importFileInput').click()">📂 Восстановить из файла</button>
+            </div>
+            <div class="card">
+                <h2>💎 Подписка</h2>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px;">10 ₽/день — безлимитные отправки в космос и аффирмации</p>
+                <button class="btn btn-secondary" id="subscribeBtn">💳 Оформить подписку</button>
+            </div>
+            <div class="card">
+                <h2>🔑 Твой ключ</h2>
+                <p style="font-family: monospace; font-size: 11px; word-break: break-all; color: #ffd700;" id="userKeyDisplay">Генерируется...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-bar" id="tabBar" style="display: none;">
+        <div class="tab-item active" data-tab="home"><span class="tab-icon">🏠</span>ГЛАВНАЯ</div>
+        <div class="tab-item" data-tab="dreams"><span class="tab-icon">💭</span>МЕЧТЫ</div>
+        <div class="tab-item" data-tab="voice"><span class="tab-icon">🎤</span>ГОЛОС</div>
+        <div class="tab-item" data-tab="space"><span class="tab-icon">🚀</span>КОСМОС</div>
+        <div class="tab-item" data-tab="profile"><span class="tab-icon">⭐</span>ПРОФИЛЬ</div>
+    </div>
+
+    <script>
+        // CANVAS И ЧАСТИЦЫ
+        const canvas = document.getElementById('magicCanvas');
+        const ctx = canvas.getContext('2d');
+        let canvasWidth, canvasHeight;
+        let bgParticles = [];
+        let trailParticles = [];
+
+        function resizeCanvas() {
+            canvasWidth = canvas.width = window.innerWidth;
+            canvasHeight = canvas.height = window.innerHeight;
+        }
+
+        class BgParticle {
+            constructor() {
+                this.x = Math.random() * canvasWidth;
+                this.y = Math.random() * canvasHeight;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.size = Math.random() * 4 + 2;
+                this.color = ['#ffd700', '#ff6b9d', '#c06fff', '#00ffff', '#ffffff'][Math.floor(Math.random() * 5)];
+                this.alpha = Math.random() * 0.8 + 0.2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0) this.x = canvasWidth;
+                if (this.x > canvasWidth) this.x = 0;
+                if (this.y < 0) this.y = canvasHeight;
+                if (this.y > canvasHeight) this.y = 0;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        class TrailParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = (Math.random() - 0.5) * 4;
+                this.life = 1.0;
+                this.decay = Math.random() * 0.015 + 0.01;
+                this.size = Math.random() * 12 + 6;
+                const hue = Math.random() > 0.5 ? (Math.random() * 60 + 280) : (Math.random() * 40 + 40);
+                this.color = `hsl(${hue}, 100%, 70%)`;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= this.decay;
+                this.size *= 0.95;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function initBgParticles() {
+            bgParticles = [];
+            for(let i = 0; i < 25; i++) bgParticles.push(new BgParticle());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            bgParticles.forEach(p => { p.update(); p.draw(); });
+            for (let i = trailParticles.length - 1; i >= 0; i--) {
+                let p = trailParticles[i];
+                p.update();
+                p.draw();
+                if (p.life <= 0) trailParticles.splice(i, 1);
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+
+        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+        let entropyData = [];
+        let entropyPercent = 0;
+        let isSwiping = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let userData = {
+            key: null, name: '', birth: '', city: '', email: '',
+            dreams: [], photos: [], audios: [], sentToSpace: 0, registered: false,
+            videoFile: null  // храним base64 видео
+        };
+        
+        // Видео элементы
+        let affirmationVideo = null;
+        let isMuted = false;
+
+        // ИНИЦИАЛИЗАЦИЯ
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvas();
+            initBgParticles();
+            animateCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const saved = localStorage.getItem('happiness_app_user');
+            if (saved) {
+                userData = JSON.parse(saved);
+                showMainScreen();
+                restoreVideo();
+            }
+        });
+        
+        function restoreVideo() {
+            if (userData.videoFile) {
+                const container = document.getElementById('videoContainer');
+                container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${userData.videoFile}" loop autoplay></video>`;
+                affirmationVideo = document.getElementById('affirmationVideo');
+                document.getElementById('videoControls').style.display = 'flex';
+                setupVideoControls();
+            }
+        }
+        
+        function setupVideoControls() {
+            const video = affirmationVideo;
+            if (!video) return;
+            
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumePercent = document.getElementById('volumePercent');
+            const muteBtn = document.getElementById('muteBtn');
+            
+            video.volume = 0.7;
+            volumeSlider.value = 0.7;
+            volumePercent.textContent = '70%';
+            
+            volumeSlider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                video.volume = val;
+                volumePercent.textContent = Math.round(val * 100) + '%';
+                isMuted = false;
+                muteBtn.textContent = '🔊';
+            });
+            
+            muteBtn.addEventListener('click', () => {
+                isMuted = !isMuted;
+                video.muted = isMuted;
+                muteBtn.textContent = isMuted ? '🔇' : '🔊';
+                if (!isMuted && video.volume > 0) {
+                    volumeSlider.value = video.volume;
+                }
+            });
+        }
+        
+        document.getElementById('selectVideoBtn')?.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/mp4';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        userData.videoFile = ev.target.result;
+                        saveUserData();
+                        const container = document.getElementById('videoContainer');
+                        container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${userData.videoFile}" loop autoplay></video>`;
+                        affirmationVideo = document.getElementById('affirmationVideo');
+                        document.getElementById('videoControls').style.display = 'flex';
+                        setupVideoControls();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        });
+
+        // СВАЙПЫ
+        const swipeArea = document.getElementById('swipeArea');
+        const entropyFill = document.getElementById('entropyFill');
+        const entropyText = document.getElementById('entropyText');
+        const btnToProfile = document.getElementById('btnToProfile');
+
+        function handleSwipeStart(e) {
+            isSwiping = true;
+            swipeArea.classList.add('swiping');
+            e.preventDefault();
+        }
+
+        function handleSwipeMove(e) {
+            if (!isSwiping) return;
+            e.preventDefault();
+
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            const rect = swipeArea.getBoundingClientRect();
+            const localX = clientX - rect.left;
+            const localY = clientY - rect.top;
+
+            trailParticles.push(new TrailParticle(clientX, clientY));
+
+            entropyData.push({ x: localX, y: localY, time: Date.now() });
+            entropyPercent = Math.min(100, Math.floor((entropyData.length / 120) * 100));
+
+            entropyFill.style.width = entropyPercent + '%';
+            entropyText.textContent = entropyPercent + '% настроено';
+
+            if (entropyPercent >= 100 && btnToProfile.disabled) {
+                btnToProfile.disabled = false;
+                btnToProfile.textContent = '✨ Частота настроена! Далее →';
+            }
+        }
+
+        function handleSwipeEnd() {
+            isSwiping = false;
+            swipeArea.classList.remove('swiping');
+        }
+
+        swipeArea.addEventListener('mousedown', handleSwipeStart);
+        swipeArea.addEventListener('mousemove', handleSwipeMove);
+        swipeArea.addEventListener('mouseup', handleSwipeEnd);
+        swipeArea.addEventListener('mouseleave', handleSwipeEnd);
+        swipeArea.addEventListener('touchstart', handleSwipeStart, { passive: false });
+        swipeArea.addEventListener('touchmove', handleSwipeMove, { passive: false });
+        swipeArea.addEventListener('touchend', handleSwipeEnd);
+
+        async function generateKey() {
+            const deviceInfo = { ua: navigator.userAgent, screen: screen.width + 'x' + screen.height, time: Date.now() };
+            const raw = JSON.stringify({ entropy: entropyData, device: deviceInfo });
+            const encoder = new TextEncoder();
+            const data = encoder.encode(raw);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        btnToProfile.addEventListener('click', async () => {
+            if (entropyPercent < 100) return;
+            userData.key = await generateKey();
+            showScreen('screen-profile');
+        });
+
+        document.getElementById('btnToVoice').addEventListener('click', () => {
+            userData.name = document.getElementById('userName').value.trim() || 'Путник';
+            userData.birth = document.getElementById('userBirth').value;
+            userData.city = document.getElementById('userCity').value.trim();
+            if (!userData.name) { alert('Как к тебе обращаться? ✨'); return; }
+            saveUserData();
+            showScreen('screen-voice');
+        });
+
+        // ЗАПИСЬ ГОЛОСА
+        const recordBtn = document.getElementById('recordBtn');
+        const recordStatus = document.getElementById('recordStatus');
+
+        recordBtn.addEventListener('click', async () => {
+            if (isRecording) stopRecording(); else await startRecording();
+        });
+
+        async function startRecording() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('❌ Ваш браузер не поддерживает запись звука');
+                    return;
+                }
+                recordStatus.textContent = '🎤 Запрашиваю разрешение...';
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                recordStatus.textContent = '🎙️ Говори! Запись началась...';
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        userData.audios.push({ id: Date.now(), data: reader.result, date: new Date().toISOString() });
+                        saveUserData();
+                        renderAudioList();
+                        recordStatus.textContent = '✅ Запись сохранена!';
+                    };
+                    reader.readAsDataURL(blob);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                recordBtn.classList.add('recording');
+                recordBtn.textContent = '⏹️';
+            } catch (err) {
+                alert('❌ Нет доступа к микрофону');
+                recordStatus.textContent = '❌ Ошибка';
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+            isRecording = false;
+            recordBtn.classList.remove('recording');
+            recordBtn.textContent = '🎙️';
+        }
+
+        function renderAudioList() {
+            const lists = [document.getElementById('audioList'), document.getElementById('audioListMain')];
+            lists.forEach(list => {
+                if(list) {
+                    list.innerHTML = userData.audios.map(a => `
+                        <div class="audio-item">
+                            <span style="font-size: 13px;">🎵 ${new Date(a.date).toLocaleDateString('ru')}</span>
+                            <audio controls src="${a.data}" style="height: 30px; width: 60%;"></audio>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        document.getElementById('btnToMain').addEventListener('click', () => {
+            userData.registered = true;
+            saveUserData();
+            showMainScreen();
+        });
+
+        function showMainScreen() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-main').classList.add('active');
+            document.getElementById('tabBar').style.display = 'flex';
+
+            document.getElementById('mainUserName').textContent = userData.name;
+            document.getElementById('statDreams').textContent = userData.dreams.length;
+            document.getElementById('statSent').textContent = userData.sentToSpace;
+            document.getElementById('userKeyDisplay').textContent = userData.key ? userData.key.substring(0, 20) + '...' : 'Нет ключа';
+
+            renderAudioList();
+            renderPhotos();
+            renderDreamsList();
+            generateAffirmation();
+            initTabs();
+        }
+
+        function initTabs() {
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                    document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
+                });
+            });
+
+            const recordBtnMain = document.getElementById('recordBtnMain');
+            if (recordBtnMain) {
+                recordBtnMain.addEventListener('click', async () => {
+                    if (isRecording) stopRecording(); else await startRecording();
+                });
+            }
+        }
+
+        function addDream() {
+            const text = document.getElementById('dreamText').value.trim();
+            if (!text) return;
+            userData.dreams.push({ id: Date.now(), text, date: new Date().toISOString() });
+            document.getElementById('dreamText').value = '';
+            document.getElementById('statDreams').textContent = userData.dreams.length;
+            saveUserData();
+            renderDreamsList();
+            alert('✨ Мечта сохранена!');
+        }
+
+        function editDream(id) {
+            const dream = userData.dreams.find(d => d.id === id);
+            if (!dream) return;
+            const newText = prompt('Редактировать мечту:', dream.text);
+            if (newText && newText.trim()) {
+                dream.text = newText.trim();
+                dream.updatedAt = Date.now();
+                saveUserData();
+                renderDreamsList();
+            }
+        }
+
+        function deleteDream(id) {
+            if (confirm('Удалить мечту?')) {
+                userData.dreams = userData.dreams.filter(d => d.id !== id);
+                saveUserData();
+                renderDreamsList();
+                document.getElementById('statDreams').textContent = userData.dreams.length;
+            }
+        }
+
+        function renderDreamsList() {
+            const container = document.getElementById('dreamsList');
+            if (!container) return;
+            if (userData.dreams.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.5); text-align: center;">У вас пока нет мечт. Добавьте первую ✨</p>';
+                return;
+            }
+            container.innerHTML = userData.dreams.map(dream => `
+                <div class="dream-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #ffd700; font-size: 12px;">#${dream.id.toString().slice(-6)}</span>
+                        <div>
+                            <button onclick="editDream(${dream.id})" style="background: none; border: none; color: #ffd700; font-size: 18px; cursor: pointer;">✏️</button>
+                            <button onclick="deleteDream(${dream.id})" style="background: none; border: none; color: #ff6b9d; font-size: 18px; cursor: pointer;">🗑️</button>
+                        </div>
+                    </div>
+                    <p style="margin-top: 8px;">${dream.text}</p>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.3);">${new Date(dream.date).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function addPhotos(event) {
+            const files = event.target.files;
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    userData.photos.push({ id: Date.now() + Math.random(), data: e.target.result });
+                    saveUserData(); renderPhotos();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderPhotos() {
+            const grid = document.getElementById('photoGrid');
+            const photosHtml = userData.photos.map(p => `<div class="photo-item"><img src="${p.data}" alt="dream"></div>`).join('');
+            grid.innerHTML = photosHtml + `<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display: none;" onchange="addPhotos(event)"></label>`;
+        }
+
+        const affirmations = [
+            "Я достоин всего самого лучшего 💫",
+            "Каждый мой шаг приближает меня к мечте 🌟",
+            "Я излучаю счастье 💖",
+            "Деньги текут ко мне легко 💰",
+            "Я здоров и полон сил ⚡",
+            "Мои мечты реальны 🚀",
+            "Я в безопасности, я любим 🌈",
+            "Сегодня — лучший день в моей жизни ✨",
+            "Я магнит для чудес 🌠",
+            "Мой голос слышен во вселенной 🌌"
+        ];
+
+        function generateAffirmation() {
+            document.getElementById('dailyAffirmation').textContent = affirmations[Math.floor(Math.random() * affirmations.length)];
+        }
+
+        // ============================================
+        // ЧЕСТНАЯ ОТПРАВКА В КОСМОС
+        // ============================================
+        
+        function textToBinary(text) {
+            let binary = '';
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i);
+                binary += charCode.toString(2).padStart(8, '0') + ' ';
+            }
+            return binary.trim();
+        }
+        
+        async function animateRealBinaryTransmission() {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.className = 'space-overlay';
+                
+                const spaceMessages = [
+                    "🌌 МЕЧТЫ ПРЕВРАЩАЮТСЯ В БИТЫ",
+                    "📡 СИГНАЛ ОТПРАВЛЕН В КОСМОС",
+                    "✨ ДАННЫЕ УХОДЯТ В БЕСКОНЕЧНОСТЬ",
+                    "🚀 ПЕРЕДАНО НА ЧАСТОТЕ ЛЮБВИ",
+                    "⭐ ПАКЕТЫ УЛЕТАЮТ В ГЛУБИНЫ ВСЕЛЕННОЙ",
+                    "🌠 БИТЫ СТАНОВЯТСЯ ЗВЁЗДАМИ"
+                ];
+                const randomMessage = spaceMessages[Math.floor(Math.random() * spaceMessages.length)];
+                
+                overlay.innerHTML = `
+                    <div style="text-align: center; color: #ffd700; font-size: 22px; margin-bottom: 20px;">✨ КОДИРОВАНИЕ МЕЧТЫ ✨</div>
+                    <div class="binary-runner" id="binaryRunner"></div>
+                    <div style="margin-top: 30px; color: #00ffaa; font-size: 14px; text-align: center;" id="statusMessage">⚡ Преобразование в бинарный код...</div>
+                    <div style="margin-top: 10px; color: rgba(255,255,255,0.5); font-size: 12px;">${randomMessage}</div>
+                `;
+                
+                document.body.appendChild(overlay);
+                
+                const runnerDiv = document.getElementById('binaryRunner');
+                const statusDiv = document.getElementById('statusMessage');
+                
+                let allDreamsText = userData.dreams.map(d => d.text).join(' | ');
+                if (!allDreamsText) allDreamsText = userData.name + ' отправляет мечту в космос';
+                
+                const binaryData = textToBinary(allDreamsText);
+                const binaryArray = binaryData.split(' ');
+                
+                let index = 0;
+                let runningText = '';
+                
+                function animateBinary() {
+                    if (index < binaryArray.length) {
+                        runningText = binaryArray[index] + ' ' + runningText;
+                        if (runningText.length > 60) runningText = runningText.substring(0, 60);
+                        runnerDiv.innerHTML = `<div class="binary-line">${runningText}</div><div class="binary-line" style="color: #ff6b9d;">${binaryArray[index]} →</div>`;
+                        index++;
+                        setTimeout(animateBinary, 30);
+                    } else {
+                        statusDiv.innerHTML = '✅ ' + randomMessage + ' 🚀';
+                        setTimeout(() => {
+                            overlay.remove();
+                            resolve();
+                        }, 2000);
+                    }
+                }
+                
+                animateBinary();
+            });
+        }
+        
+        async function sendToSpace() {
+            if (userData.dreams.length === 0) {
+                alert('Сначала добавь мечту 💭');
+                return;
+            }
+            
+            await animateRealBinaryTransmission();
+            
+            userData.sentToSpace++;
+            document.getElementById('statSent').textContent = userData.sentToSpace;
+            saveUserData();
+            
+            const log = document.getElementById('spaceLog');
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ru');
+            const messages = [
+                `🚀 ${timeStr} — Мечта #${userData.sentToSpace} отправлена в космос`,
+                `🌠 ${timeStr} — Данные ушли в бесконечность`,
+                `📡 ${timeStr} — Сигнал отправлен на частоте 7.83 Гц`,
+                `✨ ${timeStr} — Мечта превратилась в 1 и 0 и улетела`,
+                `⭐ ${timeStr} — Бинарный код достиг границ Солнечной системы`
+            ];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            log.innerHTML = randomMsg + '<br>' + log.innerHTML;
+            
+            const lines = log.innerHTML.split('<br>');
+            if (lines.length > 10) log.innerHTML = lines.slice(0, 10).join('<br>');
+            
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            
+            alert('🌠 Мечты отправлены в космос!\n📡 Они превратились в 1 и 0 и ушли в бесконечность.');
+        }
+
+        function saveEmail() {
+            const email = document.getElementById('userEmail').value.trim();
+            if (!email || !email.includes('@')) { alert('Введи корректную почту ✉️'); return; }
+            userData.email = email;
+            saveUserData();
+            alert('✅ Ключ привязан к почте!');
+        }
+
+        function exportProfile() {
+            const dataStr = JSON.stringify(userData);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `dream_backup_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('💾 Профиль сохранён в файл!');
+        }
+
+        function importProfile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.key && imported.dreams !== undefined) {
+                        userData = imported;
+                        saveUserData();
+                        alert('✅ Профиль восстановлен! Перезапустите приложение.');
+                        location.reload();
+                    } else {
+                        alert('❌ Неверный формат файла');
+                    }
+                } catch (err) {
+                    alert('❌ Ошибка чтения файла');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        document.getElementById('subscribeBtn')?.addEventListener('click', () => {
+            alert('💎 Подписка 10₽/день\n\nОплата через СБП, карты и криптовалюту\n\n🚀 Безлимитные отправки в космос');
+        });
+
+        document.getElementById('sendToSpaceBtn')?.addEventListener('click', sendToSpace);
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 'screen-swipe') setTimeout(resizeCanvas, 100);
+        }
+
+        function saveUserData() {
+            localStorage.setItem('happiness_app_user', JSON.stringify(userData));
+        }
+        
+        window.addDream = addDream;
+        window.editDream = editDream;
+        window.deleteDream = deleteDream;
+        window.addPhotos = addPhotos;
+        window.generateAffirmation = generateAffirmation;
+        window.sendToSpace = sendToSpace;
+        window.saveEmail = saveEmail;
+        window.exportProfile = exportProfile;
+        window.importProfile = importProfile;
+    </script>
+</body>
+</html>
