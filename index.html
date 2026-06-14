@@ -309,7 +309,7 @@
             background: rgba(255,215,0,0.4);
         }
         
-        /* Пузыри для отправки в космос */
+        /* Пузыри */
         .bubble {
             position: absolute;
             border-radius: 50%;
@@ -334,14 +334,59 @@
             animation: bubblePop 0.3s ease-out forwards;
         }
         @keyframes bubblePop {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        /* Золотой шарик */
+        .golden-ball {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #ff8c00);
+            box-shadow: 0 0 20px rgba(255,215,0,0.9);
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.05s linear;
+            animation: goldenGlow 1s infinite alternate;
+        }
+        .golden-ball::after {
+            content: '⭐';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            color: #fff;
+            text-shadow: 0 0 5px #ffd700;
+        }
+        @keyframes goldenGlow {
+            0% { box-shadow: 0 0 20px rgba(255,215,0,0.9); }
+            100% { box-shadow: 0 0 40px rgba(255,215,0,1.5); }
+        }
+        .golden-pop {
+            animation: goldenPop 0.4s ease-out forwards;
+        }
+        @keyframes goldenPop {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); background: radial-gradient(circle at 30% 30%, #ffaa00, #ff6600); }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        .counter-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .counter-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .counter-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
         }
     </style>
 </head>
@@ -515,6 +560,16 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Счетчики пузырей -->
+            <div class="counter-card">
+                <div class="counter-value" id="bubbleCounter">0</div>
+                <div class="counter-label">💧 Лопнутых пузырей</div>
+            </div>
+            <div class="counter-card">
+                <div class="counter-value" id="goldenCounter">0</div>
+                <div class="counter-label">⭐ Собрано золотых шариков</div>
+            </div>
         </div>
     </div>
 
@@ -531,6 +586,7 @@
     <audio id="spaceSound" preload="auto" style="display:none;"><source src="sounds/3.mp3" type="audio/mpeg"></audio>
     <audio id="slideshowMusic" preload="auto" style="display:none;"><source src="sounds/4.mp3" type="audio/mpeg"></audio>
     <audio id="bubblePopSound" preload="auto" style="display:none;"><source src="sounds/pop.mp3" type="audio/mpeg"></audio>
+    <audio id="goldenCollectSound" preload="auto" style="display:none;"><source src="sounds/coin.mp3" type="audio/mpeg"></audio>
 
     <script>
         // CANVAS
@@ -805,6 +861,7 @@
         function playClickSound() { const a=document.getElementById('clickSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
         function playSpaceSound() { const a=document.getElementById('spaceSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
         function playBubblePopSound() { const a=document.getElementById('bubblePopSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
+        function playGoldenCollectSound() { const a=document.getElementById('goldenCollectSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
 
         // АФФИРМАЦИИ
         const affirmationsMale = [
@@ -860,12 +917,14 @@
         }
 
         let entropyData=[], swipeCompleted=false, mediaRecorder=null, audioChunks=[], isRecording=false;
-        let userData = { key:null, name:'', gender:'male', dreams:[], photos:[], audios:[], sentToSpace:0, registered:false, audioNames:{}, spaceHistory:[], videoFile:null };
+        let userData = { key:null, name:'', gender:'male', dreams:[], photos:[], audios:[], sentToSpace:0, registered:false, audioNames:{}, spaceHistory:[], videoFile:null, bubbleCount:0, goldenCount:0 };
         let currentVideoURL=null;
         
         // Пузыри
         let bubbles = [];
+        let goldenBalls = [];
         let bubbleSpawnInterval = null;
+        let goldenSpawnInterval = null;
         let animationId = null;
         
         function createBubble() {
@@ -885,6 +944,9 @@
                 e.stopPropagation();
                 playBubblePopSound();
                 bubble.classList.add('bubble-pop');
+                userData.bubbleCount++;
+                document.getElementById('bubbleCounter').textContent = userData.bubbleCount;
+                saveUserData();
                 setTimeout(() => {
                     if(bubble.parentNode) bubble.remove();
                     bubbles = bubbles.filter(b => b !== bubble);
@@ -894,7 +956,37 @@
             bubbles.push(bubble);
         }
         
-        function updateBubbles() {
+        function createGoldenBall() {
+            const ball = document.createElement('div');
+            ball.className = 'golden-ball';
+            const size = 45;
+            const startX = Math.random() * (window.innerWidth - size);
+            const startY = Math.random() * (window.innerHeight - size);
+            ball.style.width = size + 'px';
+            ball.style.height = size + 'px';
+            ball.style.left = startX + 'px';
+            ball.style.top = startY + 'px';
+            ball.vx = (Math.random() - 0.5) * 1.5;
+            ball.vy = (Math.random() - 0.5) * 1.5;
+            ball.size = size;
+            ball.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playGoldenCollectSound();
+                ball.classList.add('golden-pop');
+                userData.goldenCount++;
+                document.getElementById('goldenCounter').textContent = userData.goldenCount;
+                saveUserData();
+                setTimeout(() => {
+                    if(ball.parentNode) ball.remove();
+                    goldenBalls = goldenBalls.filter(b => b !== ball);
+                }, 400);
+            });
+            document.body.appendChild(ball);
+            goldenBalls.push(ball);
+        }
+        
+        function updateBubblesAndBalls() {
+            // Обновляем обычные пузыри
             for(let i = 0; i < bubbles.length; i++) {
                 const b = bubbles[i];
                 let left = parseFloat(b.style.left);
@@ -907,6 +999,7 @@
                 if(top >= window.innerHeight - b.size) { top = window.innerHeight - b.size; b.vy = -b.vy; }
                 b.style.left = left + 'px';
                 b.style.top = top + 'px';
+                
                 for(let j = i + 1; j < bubbles.length; j++) {
                     const b2 = bubbles[j];
                     const b1Left = left, b1Top = top, b1Size = b.size;
@@ -933,21 +1026,70 @@
                     }
                 }
             }
-            requestAnimationFrame(updateBubbles);
+            
+            // Обновляем золотые шарики
+            for(let i = 0; i < goldenBalls.length; i++) {
+                const b = goldenBalls[i];
+                let left = parseFloat(b.style.left);
+                let top = parseFloat(b.style.top);
+                left += b.vx;
+                top += b.vy;
+                if(left <= 0) { left = 0; b.vx = -b.vx; }
+                if(left >= window.innerWidth - b.size) { left = window.innerWidth - b.size; b.vx = -b.vx; }
+                if(top <= 0) { top = 0; b.vy = -b.vy; }
+                if(top >= window.innerHeight - b.size) { top = window.innerHeight - b.size; b.vy = -b.vy; }
+                b.style.left = left + 'px';
+                b.style.top = top + 'px';
+                
+                for(let j = i + 1; j < goldenBalls.length; j++) {
+                    const b2 = goldenBalls[j];
+                    const b1Left = left, b1Top = top, b1Size = b.size;
+                    const b2Left = parseFloat(b2.style.left), b2Top = parseFloat(b2.style.top), b2Size = b2.size;
+                    const dx = b1Left - b2Left;
+                    const dy = b1Top - b2Top;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const minDist = (b1Size + b2Size) / 2;
+                    if(dist < minDist) {
+                        const angle = Math.atan2(dy, dx);
+                        const overlap = minDist - dist;
+                        const moveX = Math.cos(angle) * overlap / 2;
+                        const moveY = Math.sin(angle) * overlap / 2;
+                        b.style.left = (b1Left + moveX) + 'px';
+                        b.style.top = (b1Top + moveY) + 'px';
+                        b2.style.left = (b2Left - moveX) + 'px';
+                        b2.style.top = (b2Top - moveY) + 'px';
+                        const tempVx = b.vx;
+                        const tempVy = b.vy;
+                        b.vx = b2.vx;
+                        b.vy = b2.vy;
+                        b2.vx = tempVx;
+                        b2.vy = tempVy;
+                    }
+                }
+            }
+            
+            requestAnimationFrame(updateBubblesAndBalls);
         }
         
         function startBubbles() {
             if(bubbleSpawnInterval) clearInterval(bubbleSpawnInterval);
+            if(goldenSpawnInterval) clearInterval(goldenSpawnInterval);
             bubbleSpawnInterval = setInterval(() => {
                 if(bubbles.length < 15) createBubble();
             }, 30000);
-            updateBubbles();
+            goldenSpawnInterval = setInterval(() => {
+                if(goldenBalls.length < 3) createGoldenBall();
+            }, 120000);
+            updateBubblesAndBalls();
         }
         
         function stopBubbles() {
             if(bubbleSpawnInterval) clearInterval(bubbleSpawnInterval);
+            if(goldenSpawnInterval) clearInterval(goldenSpawnInterval);
             bubbles.forEach(b => b.remove());
+            goldenBalls.forEach(b => b.remove());
             bubbles = [];
+            goldenBalls = [];
         }
 
         window.addEventListener('DOMContentLoaded',()=>{
@@ -974,6 +1116,10 @@
                 currentGender=userData.gender||'male';
                 if(!userData.audioNames) userData.audioNames={};
                 if(!userData.spaceHistory) userData.spaceHistory=[];
+                if(userData.bubbleCount === undefined) userData.bubbleCount = 0;
+                if(userData.goldenCount === undefined) userData.goldenCount = 0;
+                document.getElementById('bubbleCounter').textContent = userData.bubbleCount;
+                document.getElementById('goldenCounter').textContent = userData.goldenCount;
                 showMainScreen(); 
                 startAffirmationCarousel();
                 slideshowActive = true;
@@ -1286,8 +1432,8 @@
             let frame = 0;
             let matrixColumns = [];
             let matrixDrops = [];
-            const matrixWidth = 30;
-            const matrixHeight = 30;
+            const matrixWidth = 25;
+            const matrixHeight = 25;
             const matrixCols = Math.floor(300 / matrixWidth);
             
             for(let i = 0; i < matrixCols; i++) {
@@ -1299,7 +1445,7 @@
                 animCtx.fillRect(0,0,300,300);
                 
                 animCtx.fillStyle = '#0f0';
-                animCtx.font = '16px monospace';
+                animCtx.font = '14px monospace';
                 
                 for(let i = 0; i < matrixCols; i++) {
                     for(let j = 0; j < 3; j++) {
@@ -1324,10 +1470,10 @@
                 animCtx.lineWidth = 2;
                 animCtx.stroke();
                 
-                const waveRadius = (frame * 3) % 100;
+                const waveRadius = (frame * 3) % 120;
                 animCtx.beginPath();
                 animCtx.arc(150, 130, waveRadius + 15, 0, Math.PI * 2);
-                animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 100})`;
+                animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 120})`;
                 animCtx.lineWidth = 1.5;
                 animCtx.stroke();
                 
@@ -1376,7 +1522,7 @@
         document.getElementById('sendToSpaceBtn')?.addEventListener('click', sendToSpace);
 
         function exportProfile(){const dataStr=JSON.stringify(userData); const blob=new Blob([dataStr],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`dream_backup_${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); alert('💾 Бэкап сохранён');}
-        function importProfile(file){if(!file)return; const reader=new FileReader(); reader.onload=e=>{try{const imported=JSON.parse(e.target.result); if(imported.key&&imported.dreams!==undefined){userData=imported; if(!userData.audioNames) userData.audioNames={}; if(!userData.spaceHistory) userData.spaceHistory=[]; saveUserData(); alert('✅ Восстановлено! Перезапустите.'); location.reload();}else alert('❌ Неверный формат');}catch(err){alert('Ошибка чтения');}}; reader.readAsText(file);}
+        function importProfile(file){if(!file)return; const reader=new FileReader(); reader.onload=e=>{try{const imported=JSON.parse(e.target.result); if(imported.key&&imported.dreams!==undefined){userData=imported; if(!userData.audioNames) userData.audioNames={}; if(!userData.spaceHistory) userData.spaceHistory=[]; if(userData.bubbleCount===undefined) userData.bubbleCount=0; if(userData.goldenCount===undefined) userData.goldenCount=0; saveUserData(); alert('✅ Восстановлено! Перезапустите.'); location.reload();}else alert('❌ Неверный формат');}catch(err){alert('Ошибка чтения');}}; reader.readAsText(file);}
         function resetProfile(){const name=prompt('⚠️ СБРОС ВСЕХ ДАННЫХ\n\nВведите ваше имя:', ''); if(name===userData.name){if(confirm('ВСЕ данные будут УДАЛЕНЫ. Продолжить?')){localStorage.removeItem('happiness_app_user'); alert('✅ Данные сброшены. Перезагрузка.'); location.reload();}}else{alert('❌ Имя не совпадает');}}
         function copyKey(){if(userData.key){navigator.clipboard.writeText(userData.key).then(()=>alert('✅ Ключ скопирован!'));}else alert('Ключ не сгенерирован');}
         function restoreFromKey(){const inputKey=document.getElementById('pasteKeyInput')?.value.trim(); if(!inputKey){alert('Введите ключ'); return;} if(inputKey.length===64){userData.key=inputKey; saveUserData(); alert('✅ Ключ восстановлен! Перезапустите.'); location.reload();}else alert('❌ Неверный формат');}
