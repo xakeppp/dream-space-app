@@ -265,12 +265,33 @@
             display: block;
             background: #000;
         }
-        .video-controls { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(0,0,0,0.7); }
+        .video-controls { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(0,0,0,0.7); flex-wrap: wrap; }
         .volume-slider { flex: 1; height: 4px; -webkit-appearance: none; background: rgba(255,255,255,0.3); border-radius: 5px; }
         .volume-slider::-webkit-slider-thumb { width: 16px; height: 16px; border-radius: 50%; background: #ffd700; cursor: pointer; -webkit-appearance: none; }
-        .mute-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #ffd700; }
+        .mute-btn, .play-pause-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #ffd700; margin: 0 5px; }
         .select-video-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-top: 0; }
         .refresh-slideshow-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-left: 5px; }
+        .save-video-btn { background: rgba(0,255,170,0.2); border: 1px solid #00ffaa; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-left: 5px; color: #00ffaa; }
+
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 30px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ff6b9d);
+            border-color: #ffd700;
+        }
 
         .space-overlay {
             position: fixed;
@@ -302,6 +323,9 @@
         .space-animation-canvas { width: 300px; height: 300px; margin-bottom: 20px; }
 
         .affirmation-carousel { min-height: 80px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-top: 10px; text-align: center; font-size: 16px; line-height: 1.4; }
+        
+        .double-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .double-buttons .btn { margin-top: 0; flex: 1; }
 
         .key-copy { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .key-copy p { flex: 1; font-family: monospace; font-size: 11px; word-break: break-all; color: #ffd700; }
@@ -405,18 +429,24 @@
                 <div style="display: flex; gap: 8px;">
                     <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
                     <button class="refresh-slideshow-btn" id="refreshSlideshowBtn">🔄 Обновить</button>
+                    <button class="save-video-btn" id="saveVideoBtn">💾 Сохранить как видео</button>
                 </div>
+            </div>
+            <div class="mode-switch">
+                <div class="mode-btn active" data-mode="slideshow">🎞️ Слайдшоу</div>
+                <div class="mode-btn" data-mode="video">🎬 Моё видео</div>
             </div>
             <div id="videoContainer" class="video-container" style="position: relative;">
                 <div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;">
-                    <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Выберите MP4 файл<br>или добавьте фото в галерею</p>
-                    <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Фото из галереи будут крутиться как слайдшоу</p>
+                    <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Слайдшоу из ваших фото</p>
+                    <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Добавьте фото в галерею</p>
                 </div>
             </div>
             <div class="video-controls" id="videoControls" style="display: none;">
+                <button class="play-pause-btn" id="playPauseBtn">⏸️</button>
                 <button class="mute-btn" id="muteBtn">🔊</button>
-                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.7">
-                <span id="volumePercent" style="font-size: 12px;">70%</span>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+                <span id="volumePercent" style="font-size: 12px;">50%</span>
             </div>
         </div>
         
@@ -429,7 +459,10 @@
             <div class="card">
                 <h2>✨ Аффирмация дня</h2>
                 <div class="affirmation-carousel" id="dailyAffirmation">Загрузка...</div>
-                <button class="btn" id="refreshAffirmationBtn" style="margin-top: 10px;">🔄 Новая аффирмация</button>
+                <div class="double-buttons">
+                    <button class="btn" id="refreshAffirmationBtn">🔄 Новая</button>
+                    <button class="btn" id="addRandomDreamBtn">✨ Добавить как мечту</button>
+                </div>
             </div>
         </div>
 
@@ -589,45 +622,29 @@
             requestAnimationFrame(animateCanvas);
         }
 
-        // СЛАЙДШОУ (0.5 сек, с музыкой 4.mp3)
+        // СЛАЙДШОУ
         let slideshowInterval = null;
         let currentSlideIndex = 0;
         let slideshowActive = true;
         let musicPlaying = false;
         let slideshowMusic = null;
+        let isPaused = false;
+        let currentMode = 'slideshow'; // slideshow или video
         
         function startSlideshow() {
             if(slideshowInterval) clearInterval(slideshowInterval);
-            if(!slideshowActive) return;
+            if(!slideshowActive || isPaused) return;
             updateSlide();
             slideshowInterval = setInterval(updateSlide, 500);
             
-            // Музыка для слайдшоу
             slideshowMusic = document.getElementById('slideshowMusic');
-            if(slideshowMusic && !musicPlaying && !document.querySelector('#affirmationVideo')) {
-                slideshowMusic.volume = 0.3;
+            if(slideshowMusic && !musicPlaying && !document.querySelector('#affirmationVideo') && currentMode === 'slideshow') {
+                slideshowMusic.volume = 0.5;
                 slideshowMusic.loop = true;
                 slideshowMusic.play().catch(e=>console.log('music play blocked'));
                 musicPlaying = true;
-                
-                // Ползунок для музыки
-                const volSlider = document.getElementById('volumeSlider');
-                const muteBtn = document.getElementById('muteBtn');
-                if(volSlider && !document.querySelector('#affirmationVideo')) {
-                    volSlider.oninput = () => {
-                        slideshowMusic.volume = parseFloat(volSlider.value);
-                        document.getElementById('volumePercent').textContent = Math.round(slideshowMusic.volume * 100) + '%';
-                    };
-                    muteBtn.onclick = () => {
-                        if(slideshowMusic.muted) {
-                            slideshowMusic.muted = false;
-                            muteBtn.textContent = '🔊';
-                        } else {
-                            slideshowMusic.muted = true;
-                            muteBtn.textContent = '🔇';
-                        }
-                    };
-                }
+                document.getElementById('volumeSlider').value = 0.5;
+                document.getElementById('volumePercent').textContent = '50%';
             }
         }
         
@@ -636,9 +653,25 @@
                 clearInterval(slideshowInterval);
                 slideshowInterval = null;
             }
+        }
+        
+        function pauseSlideshow() {
+            isPaused = true;
+            stopSlideshow();
             if(slideshowMusic && musicPlaying) {
                 slideshowMusic.pause();
                 musicPlaying = false;
+            }
+        }
+        
+        function resumeSlideshow() {
+            isPaused = false;
+            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) {
+                startSlideshow();
+                if(slideshowMusic && !musicPlaying) {
+                    slideshowMusic.play().catch(e=>console.log('music play blocked'));
+                    musicPlaying = true;
+                }
             }
         }
         
@@ -646,33 +679,124 @@
             const container = document.getElementById('videoContainer');
             if(!container) return;
             if(container.querySelector('video')) return;
+            if(currentMode !== 'slideshow') return;
             
             const photos = userData.photos || [];
             const dreams = userData.dreams || [];
+            const audios = userData.audios || [];
             
             if(photos.length === 0) {
-                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Выберите MP4 файл<br>или добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Фото из галереи будут крутиться как слайдшоу</p></div>';
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
                 return;
             }
             
             currentSlideIndex = (currentSlideIndex + 1) % photos.length;
             const photo = photos[currentSlideIndex];
             const dream = dreams.length > 0 ? dreams[Math.floor(Math.random() * dreams.length)].text : "Твоя мечта здесь... ✨";
+            const voiceText = audios.length > 0 ? "🎤 Есть голосовая запись" : "";
             
             container.innerHTML = `
                 <div style="position: relative; width: 100%; min-height: 250px; background: #000;">
                     <img src="${photo.data}" style="width: 100%; height: auto; min-height: 250px; object-fit: cover; opacity: 0.7;">
                     <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; background: rgba(0,0,0,0.3);">
-                        <p style="color: #ffd700; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; max-width: 90%;">${escapeHtml(dream)}</p>
+                        <p style="color: #ffd700; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; max-width: 90%;">${escapeHtml(dream)}<br><span style="font-size: 12px; color: rgba(255,255,255,0.5);">${voiceText}</span></p>
                     </div>
                 </div>
             `;
         }
         
         function refreshSlideshow() {
-            if(slideshowActive && !document.querySelector('#affirmationVideo')) {
+            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) {
                 updateSlide();
             }
+        }
+        
+        function saveSlideshowAsVideo() {
+            alert('📱 Функция сохранения видео требует дополнительной библиотеки.\n\n💡 Рекомендация: используйте встроенную запись экрана на телефоне.\n\nНа Android: Настройки → Панель быстрых настроек → Запись экрана\nНа iPhone: Настройки → Пункт управления → Запись экрана\n\nЗатем запустите слайдшоу и начните запись! ✨');
+        }
+
+        // Переключение режимов
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                if(btn.dataset.mode === mode) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            if(mode === 'slideshow') {
+                // Удаляем видео если есть
+                const container = document.getElementById('videoContainer');
+                if(container.querySelector('video')) {
+                    const video = container.querySelector('video');
+                    if(video) video.pause();
+                    container.innerHTML = '';
+                    slideshowActive = true;
+                    startSlideshow();
+                } else if(slideshowActive) {
+                    startSlideshow();
+                }
+                if(slideshowMusic && !musicPlaying) {
+                    slideshowMusic.play().catch(e=>console.log('music play blocked'));
+                    musicPlaying = true;
+                }
+            } else if(mode === 'video') {
+                stopSlideshow();
+                if(slideshowMusic && musicPlaying) {
+                    slideshowMusic.pause();
+                    musicPlaying = false;
+                }
+                const container = document.getElementById('videoContainer');
+                if(!container.querySelector('video') && userData.videoFile) {
+                    container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${userData.videoFile}" loop autoplay style="width:100%"></video>`;
+                    document.getElementById('videoControls').style.display = 'flex';
+                    const video = document.getElementById('affirmationVideo');
+                    setupVideoControls(video);
+                } else if(!userData.videoFile) {
+                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
+                    document.getElementById('selectVideoBtnModal')?.addEventListener('click', handleSelectVideo);
+                }
+            }
+        }
+        
+        function setupVideoControls(video) {
+            const volSlider = document.getElementById('volumeSlider');
+            const volPercent = document.getElementById('volumePercent');
+            const muteBtn = document.getElementById('muteBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            let muted = false;
+            let isPlaying = true;
+            
+            video.volume = 0.5;
+            volSlider.value = 0.5;
+            volPercent.textContent = '50%';
+            
+            volSlider.oninput = () => {
+                video.volume = parseFloat(volSlider.value);
+                volPercent.textContent = Math.round(video.volume * 100) + '%';
+                muted = false;
+                muteBtn.textContent = '🔊';
+                video.muted = false;
+                if(slideshowMusic && !muted && currentMode === 'slideshow') {
+                    slideshowMusic.volume = video.volume;
+                }
+            };
+            
+            muteBtn.onclick = () => {
+                muted = !muted;
+                video.muted = muted;
+                muteBtn.textContent = muted ? '🔇' : '🔊';
+            };
+            
+            playPauseBtn.onclick = () => {
+                if(isPlaying) {
+                    video.pause();
+                    playPauseBtn.textContent = '▶️';
+                } else {
+                    video.play();
+                    playPauseBtn.textContent = '⏸️';
+                }
+                isPlaying = !isPlaying;
+            };
         }
 
         function playSwipeSound() { const a=document.getElementById('swipeSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
@@ -694,12 +818,41 @@
 
         let currentAffirmationInterval = null;
         let currentGender = 'male';
-        function getRandomAffirmation() { const affs=currentGender==='male'?affirmationsMale:affirmationsFemale; return affs[Math.floor(Math.random()*affs.length)]; }
-        function updateAffirmationCarousel() { const el=document.getElementById('dailyAffirmation'); if(el) el.textContent=getRandomAffirmation(); }
-        function startAffirmationCarousel() { if(currentAffirmationInterval) clearInterval(currentAffirmationInterval); updateAffirmationCarousel(); currentAffirmationInterval=setInterval(updateAffirmationCarousel,3000); }
+        let currentRandomAffirmation = "";
+        
+        function getRandomAffirmation() { 
+            const affs = currentGender==='male'?affirmationsMale:affirmationsFemale; 
+            return affs[Math.floor(Math.random()*affs.length)]; 
+        }
+        
+        function updateAffirmationCarousel() { 
+            const el = document.getElementById('dailyAffirmation'); 
+            if(el) {
+                currentRandomAffirmation = getRandomAffirmation();
+                el.textContent = currentRandomAffirmation;
+            }
+        }
+        
+        function startAffirmationCarousel() { 
+            if(currentAffirmationInterval) clearInterval(currentAffirmationInterval); 
+            updateAffirmationCarousel(); 
+            currentAffirmationInterval = setInterval(updateAffirmationCarousel, 1000); 
+        }
+        
+        function addRandomDream() {
+            if(currentRandomAffirmation) {
+                playClickSound();
+                userData.dreams.push({id:Date.now(), text:currentRandomAffirmation, date:new Date().toISOString()}); 
+                document.getElementById('statDreams').textContent = userData.dreams.length; 
+                saveUserData(); 
+                renderDreamsList();
+                if(slideshowActive && !document.querySelector('#affirmationVideo')) refreshSlideshow();
+                alert('✨ Мечта добавлена из аффирмации!');
+            }
+        }
 
         let entropyData=[], swipeCompleted=false, mediaRecorder=null, audioChunks=[], isRecording=false;
-        let userData = { key:null, name:'', gender:'male', dreams:[], photos:[], audios:[], sentToSpace:0, registered:false, audioNames:{}, spaceHistory:[] };
+        let userData = { key:null, name:'', gender:'male', dreams:[], photos:[], audios:[], sentToSpace:0, registered:false, audioNames:{}, spaceHistory:[], videoFile:null };
         let currentVideoURL=null;
 
         window.addEventListener('DOMContentLoaded',()=>{
@@ -725,14 +878,23 @@
                 startSlideshow();
             });
             document.getElementById('refreshSlideshowBtn')?.addEventListener('click',()=>{
-                if(!document.querySelector('#affirmationVideo')) {
+                if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) {
                     refreshSlideshow();
-                    alert('✨ Слайдшоу обновлено из галереи и мечт');
+                    alert('✨ Слайдшоу обновлено');
                 }
+            });
+            document.getElementById('saveVideoBtn')?.addEventListener('click', saveSlideshowAsVideo);
+            document.getElementById('addRandomDreamBtn')?.addEventListener('click', addRandomDream);
+            
+            // Режимы
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchMode(btn.dataset.mode);
+                });
             });
         });
 
-        // СВАЙП 1000 точек
+        // СВАЙП
         const swipeArea=document.getElementById('swipeArea');
         const entropyFill=document.getElementById('entropyFill');
         const entropyText=document.getElementById('entropyText');
@@ -784,6 +946,7 @@
                             if(!userData.audioNames) userData.audioNames={};
                             userData.audioNames[id]=`Запись ${userData.audios.length}`;
                             saveUserData(); renderAudioList(listId);
+                            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();
                             statusEl.innerHTML='✅ Запись сохранена!';
                         };
                         reader.readAsDataURL(blob);
@@ -802,8 +965,19 @@
             const container=document.getElementById(listId); 
             if(!container)return; 
             if(!userData.audios||userData.audios.length===0){container.innerHTML='<p style="color:rgba(255,255,255,0.5);text-align:center;">Нет записей</p>'; return;}
-            container.innerHTML=userData.audios.map(a=>`<div class="audio-item"><div class="audio-name"><span onclick="renameAudio(${a.id},'${listId}')">✏️ ${userData.audioNames?.[a.id]||'Запись'}</span><span style="font-size:11px;">${new Date(a.date).toLocaleDateString()}</span></div><audio controls src="${a.data}" style="width:100%; height:36px;" preload="metadata"></audio></div>`).join('');
+            container.innerHTML=userData.audios.map(a=>`<div class="audio-item"><div class="audio-name"><span onclick="renameAudio(${a.id},'${listId}')">✏️ ${userData.audioNames?.[a.id]||'Запись'}</span><span style="font-size:11px;">${new Date(a.date).toLocaleDateString()}</span><button onclick="deleteAudio(${a.id},'${listId}')" style="background:none;border:none;color:#ff6b9d;cursor:pointer;">🗑️</button></div><audio controls src="${a.data}" style="width:100%; height:36px;" preload="metadata"></audio></div>`).join('');
         }
+        
+        function deleteAudio(id, listId) {
+            if(confirm('Удалить запись?')) {
+                userData.audios = userData.audios.filter(a => a.id !== id);
+                if(userData.audioNames) delete userData.audioNames[id];
+                saveUserData();
+                renderAudioList(listId);
+                if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();
+            }
+        }
+        
         setupRecording('recordBtn','stopBtn','recordStatus','audioList');
         setupRecording('recordBtnMain','stopBtnMain','recordStatusMain','audioListMain');
 
@@ -831,6 +1005,23 @@
             renderDreamsList(); 
             renderHistoryList(); 
             initTabs();
+            
+            // Восстановление режима
+            if(userData.videoFile) {
+                currentMode = 'video';
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    if(btn.dataset.mode === 'video') btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+                switchMode('video');
+            } else {
+                currentMode = 'slideshow';
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    if(btn.dataset.mode === 'slideshow') btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+                switchMode('slideshow');
+            }
         }
         
         function initTabs(){
@@ -856,14 +1047,14 @@
             document.getElementById('statDreams').textContent=userData.dreams.length; 
             saveUserData(); 
             renderDreamsList();
-            if(slideshowActive && !document.querySelector('#affirmationVideo')) refreshSlideshow();
+            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();
             alert('✨ Мечта сохранена!');
         }
         document.getElementById('addDreamBtn')?.addEventListener('click',addDream);
         document.getElementById('refreshAffirmationBtn')?.addEventListener('click',()=>{playClickSound(); updateAffirmationCarousel();});
 
-        function editDream(id){const dream=userData.dreams.find(d=>d.id===id); if(!dream)return; const newText=prompt('Редактировать мечту:',dream.text); if(newText&&newText.trim()){dream.text=newText.trim(); saveUserData(); renderDreamsList(); if(slideshowActive && !document.querySelector('#affirmationVideo')) refreshSlideshow();}}
-        function deleteDream(id){if(confirm('Удалить мечту?')){userData.dreams=userData.dreams.filter(d=>d.id!==id); saveUserData(); renderDreamsList(); document.getElementById('statDreams').textContent=userData.dreams.length; if(slideshowActive && !document.querySelector('#affirmationVideo')) refreshSlideshow();}}
+        function editDream(id){const dream=userData.dreams.find(d=>d.id===id); if(!dream)return; const newText=prompt('Редактировать мечту:',dream.text); if(newText&&newText.trim()){dream.text=newText.trim(); saveUserData(); renderDreamsList(); if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}}
+        function deleteDream(id){if(confirm('Удалить мечту?')){userData.dreams=userData.dreams.filter(d=>d.id!==id); saveUserData(); renderDreamsList(); document.getElementById('statDreams').textContent=userData.dreams.length; if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}}
         function renderDreamsList(){
             const container=document.getElementById('dreamsList'); 
             if(!container)return; 
@@ -874,9 +1065,9 @@
 
         function addPhotos(event){
             const files=Array.from(event.target.files); 
-            files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos(); if(slideshowActive && !document.querySelector('#affirmationVideo')) refreshSlideshow();}; reader.readAsDataURL(file);});
+            files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos(); if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}; reader.readAsDataURL(file);});
         }
-        function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos(); if(slideshowActive && !document.querySelector('#affirmationVideo')) refreshSlideshow();}
+        function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos(); if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}
         function renderPhotos(){
             const grid=document.getElementById('photoGrid'); 
             if(!grid)return; 
@@ -891,19 +1082,11 @@
             input.onchange=e=>{
                 const file=e.target.files[0]; 
                 if(file){
-                    slideshowActive = false;
-                    stopSlideshow();
                     if(currentVideoURL) URL.revokeObjectURL(currentVideoURL);
                     currentVideoURL=URL.createObjectURL(file);
-                    const container=document.getElementById('videoContainer');
-                    container.innerHTML=`<video id="affirmationVideo" class="affirmation-video" src="${currentVideoURL}" loop autoplay style="width:100%"></video>`;
-                    const video=document.getElementById('affirmationVideo');
-                    document.getElementById('videoControls').style.display='flex';
-                    const volSlider=document.getElementById('volumeSlider'), volPercent=document.getElementById('volumePercent'), muteBtn=document.getElementById('muteBtn');
-                    let muted=false;
-                    video.volume=0.7; volSlider.value=0.7; volPercent.textContent='70%';
-                    volSlider.oninput=()=>{video.volume=parseFloat(volSlider.value); volPercent.textContent=Math.round(video.volume*100)+'%'; muted=false; muteBtn.textContent='🔊'; video.muted=false;};
-                    muteBtn.onclick=()=>{muted=!muted; video.muted=muted; muteBtn.textContent=muted?'🔇':'🔊';};
+                    userData.videoFile = currentVideoURL;
+                    saveUserData();
+                    switchMode('video');
                 }
             };
             input.click();
@@ -1025,7 +1208,7 @@
         function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id)?.classList.add('active');}
         function saveUserData(){localStorage.setItem('happiness_app_user',JSON.stringify(userData));}
 
-        window.editDream=editDream; window.deleteDream=deleteDream; window.renameAudio=renameAudio; window.addPhotos=addPhotos; window.deletePhoto=deletePhoto;
+        window.editDream=editDream; window.deleteDream=deleteDream; window.renameAudio=renameAudio; window.deleteAudio=deleteAudio; window.addPhotos=addPhotos; window.deletePhoto=deletePhoto;
         window.addEventListener('mousemove',(e)=>addGlobalTrail(e.clientX,e.clientY));
         window.addEventListener('touchmove',(e)=>{if(e.touches) addGlobalTrail(e.touches[0].clientX,e.touches[0].clientY);});
     </script>
