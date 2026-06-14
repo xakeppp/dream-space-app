@@ -258,6 +258,7 @@
             border: 2px solid rgba(255,215,0,0.3);
             position: relative;
             background: #000;
+            min-height: 250px;
         }
         .affirmation-video {
             width: 100%;
@@ -269,7 +270,7 @@
         .volume-slider::-webkit-slider-thumb { width: 16px; height: 16px; border-radius: 50%; background: #ffd700; cursor: pointer; -webkit-appearance: none; }
         .mute-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #ffd700; }
         .select-video-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-top: 0; }
-        .refresh-slideshow-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-top: 0; margin-left: 5px; }
+        .refresh-slideshow-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-left: 5px; }
 
         .space-overlay {
             position: fixed;
@@ -315,7 +316,38 @@
         .skip-hint { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 15px; cursor: pointer; }
         .skip-hint:hover { color: #ffd700; }
         
-        .space-log-message { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .space-log-message { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 12px; }
+        
+        .slideshow-image {
+            width: 100%;
+            height: auto;
+            min-height: 250px;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+        .slideshow-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+        .slideshow-text {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 90%;
+        }
     </style>
 </head>
 <body>
@@ -372,11 +404,14 @@
                 <h2 style="margin-bottom: 0;">🎬 Видео-аффирмация</h2>
                 <div style="display: flex; gap: 8px;">
                     <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
-                    <button class="refresh-slideshow-btn" id="refreshSlideshowBtn" title="Обновить слайдшоу из фото и мечт">🔄 Обновить</button>
+                    <button class="refresh-slideshow-btn" id="refreshSlideshowBtn">🔄 Обновить</button>
                 </div>
             </div>
-            <div id="videoContainer" class="video-container" style="min-height: 250px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
-                <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Выберите MP4 файл<br>или добавьте фото в галерею</p>
+            <div id="videoContainer" class="video-container" style="position: relative;">
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;">
+                    <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Выберите MP4 файл<br>или добавьте фото в галерею</p>
+                    <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Фото из галереи будут крутиться как слайдшоу</p>
+                </div>
             </div>
             <div class="video-controls" id="videoControls" style="display: none;">
                 <button class="mute-btn" id="muteBtn">🔊</button>
@@ -470,6 +505,7 @@
     <audio id="swipeSound" preload="auto" style="display:none;"><source src="sounds/1.mp3" type="audio/mpeg"></audio>
     <audio id="clickSound" preload="auto" style="display:none;"><source src="sounds/2.mp3" type="audio/mpeg"></audio>
     <audio id="spaceSound" preload="auto" style="display:none;"><source src="sounds/3.mp3" type="audio/mpeg"></audio>
+    <audio id="slideshowMusic" preload="auto" style="display:none;"><source src="sounds/4.mp3" type="audio/mpeg"></audio>
 
     <script>
         // CANVAS
@@ -553,22 +589,56 @@
             requestAnimationFrame(animateCanvas);
         }
 
-        // СЛАЙДШОУ (только когда нет видео)
+        // СЛАЙДШОУ (0.5 сек, с музыкой 4.mp3)
         let slideshowInterval = null;
         let currentSlideIndex = 0;
         let slideshowActive = true;
+        let musicPlaying = false;
+        let slideshowMusic = null;
         
         function startSlideshow() {
             if(slideshowInterval) clearInterval(slideshowInterval);
             if(!slideshowActive) return;
             updateSlide();
-            slideshowInterval = setInterval(updateSlide, 5000);
+            slideshowInterval = setInterval(updateSlide, 500);
+            
+            // Музыка для слайдшоу
+            slideshowMusic = document.getElementById('slideshowMusic');
+            if(slideshowMusic && !musicPlaying && !document.querySelector('#affirmationVideo')) {
+                slideshowMusic.volume = 0.3;
+                slideshowMusic.loop = true;
+                slideshowMusic.play().catch(e=>console.log('music play blocked'));
+                musicPlaying = true;
+                
+                // Ползунок для музыки
+                const volSlider = document.getElementById('volumeSlider');
+                const muteBtn = document.getElementById('muteBtn');
+                if(volSlider && !document.querySelector('#affirmationVideo')) {
+                    volSlider.oninput = () => {
+                        slideshowMusic.volume = parseFloat(volSlider.value);
+                        document.getElementById('volumePercent').textContent = Math.round(slideshowMusic.volume * 100) + '%';
+                    };
+                    muteBtn.onclick = () => {
+                        if(slideshowMusic.muted) {
+                            slideshowMusic.muted = false;
+                            muteBtn.textContent = '🔊';
+                        } else {
+                            slideshowMusic.muted = true;
+                            muteBtn.textContent = '🔇';
+                        }
+                    };
+                }
+            }
         }
         
         function stopSlideshow() {
             if(slideshowInterval) {
                 clearInterval(slideshowInterval);
                 slideshowInterval = null;
+            }
+            if(slideshowMusic && musicPlaying) {
+                slideshowMusic.pause();
+                musicPlaying = false;
             }
         }
         
@@ -592,8 +662,8 @@
             container.innerHTML = `
                 <div style="position: relative; width: 100%; min-height: 250px; background: #000;">
                     <img src="${photo.data}" style="width: 100%; height: auto; min-height: 250px; object-fit: cover; opacity: 0.7;">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px;">
-                        <p style="color: #ffd700; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px;">${escapeHtml(dream)}</p>
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; background: rgba(0,0,0,0.3);">
+                        <p style="color: #ffd700; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; max-width: 90%;">${escapeHtml(dream)}</p>
                     </div>
                 </div>
             `;
@@ -638,8 +708,8 @@
             if(saved){
                 userData=JSON.parse(saved); 
                 currentGender=userData.gender||'male';
-                if(userData.audioNames===undefined) userData.audioNames={};
-                if(userData.spaceHistory===undefined) userData.spaceHistory=[];
+                if(!userData.audioNames) userData.audioNames={};
+                if(!userData.spaceHistory) userData.spaceHistory=[];
                 showMainScreen(); 
                 startAffirmationCarousel();
                 slideshowActive = true;
@@ -851,8 +921,11 @@
         
         function addSpaceLog(message){
             const log=document.getElementById('spaceLog');
-            log.innerHTML='<div class="space-log-message">'+message+'</div>'+log.innerHTML;
-            if(log.children.length>15) log.removeChild(log.lastChild);
+            const newMsg = document.createElement('div');
+            newMsg.className = 'space-log-message';
+            newMsg.innerHTML = message;
+            log.insertBefore(newMsg, log.firstChild);
+            if(log.children.length > 15) log.removeChild(log.lastChild);
         }
 
         async function sendToSpace(){
@@ -863,6 +936,7 @@
             const binaryCode=textToBinary(allDreamsText);
             const spaceId = Date.now();
             userData.spaceHistory.push({id:spaceId,date:new Date().toISOString(),dreamsText:allDreamsText,binaryCode:binaryCode,dreamCount:userData.dreams.length});
+            saveUserData();
             
             const spaceMessages = [
                 "🌌 МЕЧТЫ ПРЕВРАЩАЮТСЯ В БИТЫ",
