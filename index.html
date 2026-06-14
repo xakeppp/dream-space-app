@@ -88,36 +88,6 @@
             box-shadow: 0 0 40px rgba(255,215,0,0.4);
         }
 
-        #swipeArea.completed {
-            border-color: #00ffaa;
-            background: rgba(0,255,170,0.1);
-            box-shadow: 0 0 40px rgba(0,255,170,0.4);
-        }
-
-        .swipe-text {
-            font-size: 18px;
-            color: #ffd700;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        .entropy-bar {
-            width: 80%;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-
-        .entropy-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff6b9d, #ffd700, #c06fff);
-            transition: width 0.05s linear;
-            border-radius: 10px;
-        }
-
         .btn {
             width: 100%;
             padding: 16px;
@@ -155,7 +125,6 @@
         .gender-btn.active {
             background: linear-gradient(135deg, #ffd700, #ff6b9d);
             border-color: #ffd700;
-            transform: scale(1.02);
         }
 
         input, textarea {
@@ -169,8 +138,6 @@
             margin-bottom: 12px;
             outline: none;
         }
-
-        input:focus, textarea:focus { border-color: #ffd700; }
 
         .record-area {
             display: flex;
@@ -196,139 +163,62 @@
             animation: pulse 1s infinite;
             box-shadow: 0 0 20px rgba(255,71,87,0.8);
         }
-        .stop-btn {
-            background: #333;
-            font-size: 30px;
-        }
+        .stop-btn { background: #333; font-size: 30px; }
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
+            0%,100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
 
-        .record-status {
-            text-align: center;
-            font-size: 14px;
-            margin: 10px 0;
-            color: #ffd700;
-        }
-        .recording-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: red;
-            border-radius: 50%;
-            animation: blink 1s infinite;
-            margin-right: 5px;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
+        .record-status { text-align: center; font-size: 14px; margin: 10px 0; color: #ffd700; }
+        .recording-dot { display: inline-block; width: 10px; height: 10px; background: red; border-radius: 50%; animation: blink 1s infinite; margin-right: 5px; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
-        .audio-list, .dreams-list, .history-list {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .audio-item, .dream-item, .history-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-        .audio-name {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .audio-name span {
-            cursor: pointer;
-            font-size: 14px;
-            color: #ffd700;
-        }
+        .audio-list, .dreams-list, .history-list { margin-top: 20px; max-height: 300px; overflow-y: auto; }
+        .audio-item, .dream-item, .history-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; }
+        .audio-name { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .audio-name span { cursor: pointer; font-size: 14px; color: #ffd700; }
 
         .tab-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 14, 39, 0.95);
+            background: rgba(10,14,39,0.95);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            border-top: 1px solid rgba(255,215,0,0.3);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
             z-index: 100;
         }
-
         .tab-item {
             flex: 1;
             text-align: center;
             padding: 8px 4px;
             cursor: pointer;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255,255,255,0.5);
             font-size: 11px;
         }
         .tab-item.active { color: #ffd700; }
         .tab-icon { font-size: 24px; display: block; margin-bottom: 4px; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-        }
+        .stat-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center; }
         .stat-value { font-size: 24px; font-weight: bold; color: #ffd700; }
-        .stat-label { font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 5px; }
+        .stat-label { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 5px; }
 
         .photo-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4,1fr);
             gap: 8px;
             margin-top: 15px;
             max-height: 400px;
             overflow-y: auto;
         }
-        .photo-item {
-            aspect-ratio: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-            position: relative;
-        }
-        .photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .delete-photo {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            cursor: pointer;
-            color: #ff6b9d;
-            z-index: 2;
-        }
-        .add-photo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            cursor: pointer;
-            border: 2px dashed rgba(255, 215, 0, 0.3);
-            background: rgba(255,255,255,0.05);
-        }
+        .photo-item { aspect-ratio: 1; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .delete-photo { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; color: #ff6b9d; }
+        .add-photo { display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; border: 2px dashed rgba(255,215,0,0.3); background: rgba(255,255,255,0.05); }
         .hidden { display: none !important; }
         .progress-text { text-align: center; margin-top: 10px; color: #ffd700; font-size: 14px; }
 
@@ -336,20 +226,18 @@
             border-radius: 20px;
             overflow: hidden;
             margin-bottom: 15px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            border: 2px solid rgba(255,215,0,0.3);
+            position: relative;
+            background: #000;
+            min-height: 300px;
         }
-        .affirmation-video {
+        .slideshow-canvas {
             width: 100%;
+            height: auto;
             display: block;
             background: #000;
         }
-        .video-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 10px;
-            background: rgba(0,0,0,0.7);
-        }
+        .video-controls { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(0,0,0,0.7); }
         .volume-slider { flex: 1; height: 4px; -webkit-appearance: none; background: rgba(255,255,255,0.3); border-radius: 5px; }
         .volume-slider::-webkit-slider-thumb { width: 16px; height: 16px; border-radius: 50%; background: #ffd700; cursor: pointer; -webkit-appearance: none; }
         .mute-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #ffd700; }
@@ -370,92 +258,38 @@
         }
         .binary-runner {
             font-family: monospace;
-            font-size: 14px;
+            font-size: 12px;
             color: #00ffaa;
             background: #000;
             padding: 20px;
             border-radius: 15px;
             width: 90%;
             max-width: 500px;
-            height: 250px;
-            overflow: auto;
-            border: 1px solid #ffd700;
-        }
-        .binary-line { font-family: monospace; font-size: 12px; line-height: 1.4; }
-
-        .affirmation-carousel {
-            min-height: 80px;
-            padding: 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 16px;
-            line-height: 1.4;
-        }
-
-        .key-copy {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .key-copy p {
-            flex: 1;
-            font-family: monospace;
-            font-size: 11px;
-            word-break: break-all;
-            color: #ffd700;
-        }
-        .copy-btn {
-            background: rgba(255,215,0,0.2);
-            border: 1px solid #ffd700;
-            border-radius: 8px;
-            padding: 5px 10px;
-            font-size: 12px;
-            cursor: pointer;
-            color: #ffd700;
-        }
-        .paste-area {
-            margin-top: 10px;
-            padding: 8px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            display: flex;
-            gap: 8px;
-        }
-        .paste-area input {
-            flex: 1;
-            margin: 0;
-            padding: 8px;
-            font-size: 11px;
-        }
-        .paste-area button {
-            margin: 0;
-            padding: 8px 12px;
-            width: auto;
-        }
-        
-        .history-binary {
-            font-family: monospace;
-            font-size: 10px;
-            color: #00ffaa;
-            margin-top: 8px;
-            word-break: break-all;
-            max-height: 100px;
+            height: 300px;
             overflow-y: auto;
-            background: rgba(0,0,0,0.3);
-            padding: 8px;
-            border-radius: 8px;
+            border: 1px solid #ffd700;
         }
-        .view-binary-btn {
-            background: rgba(0,255,170,0.2);
-            border: 1px solid #00ffaa;
-            border-radius: 15px;
-            padding: 4px 12px;
-            font-size: 11px;
-            cursor: pointer;
-            margin-left: 10px;
+        .binary-line { font-family: monospace; font-size: 11px; line-height: 1.3; margin: 2px 0; }
+        .space-animation-canvas {
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
         }
+
+        .affirmation-carousel { min-height: 80px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-top: 10px; text-align: center; font-size: 16px; line-height: 1.4; }
+
+        .key-copy { display: flex; gap: 10px; align-items: center; }
+        .key-copy p { flex: 1; font-family: monospace; font-size: 11px; word-break: break-all; color: #ffd700; }
+        .copy-btn { background: rgba(255,215,0,0.2); border: 1px solid #ffd700; border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; color: #ffd700; }
+        .paste-area { margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 10px; display: flex; gap: 8px; }
+        .paste-area input { flex: 1; margin: 0; padding: 8px; font-size: 11px; }
+        .paste-area button { margin: 0; padding: 8px 12px; width: auto; }
+        
+        .history-binary { font-family: monospace; font-size: 10px; color: #00ffaa; margin-top: 8px; word-break: break-all; max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; }
+        .view-binary-btn { background: rgba(0,255,170,0.2); border: 1px solid #00ffaa; border-radius: 15px; padding: 4px 12px; font-size: 11px; cursor: pointer; margin-left: 10px; }
+        
+        .skip-hint { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 15px; cursor: pointer; }
+        .skip-hint:hover { color: #ffd700; }
     </style>
 </head>
 <body>
@@ -492,12 +326,14 @@
     <div id="screen-voice" class="screen">
         <h1>🎤 Голос Мечты</h1>
         <div class="card">
+            <p style="text-align: center; color: rgba(255,255,255,0.7); margin-bottom: 15px;">Запиши свою мечту голосом, чтобы она обрела силу</p>
             <div class="record-area">
                 <div class="record-btn" id="recordBtn">🎙️</div>
                 <div class="record-btn stop-btn" id="stopBtn" style="opacity:0.5;">⏹️</div>
             </div>
             <div class="record-status" id="recordStatus">⏸ Готов к записи</div>
             <div class="audio-list" id="audioList"></div>
+            <div class="skip-hint" id="skipVoiceBtn">⏩ Пропустить (записать позже)</div>
         </div>
         <button class="btn" id="btnToMain">Войти 🚀</button>
     </div>
@@ -506,17 +342,18 @@
         <h1>🌌 <span id="mainUserName">Путник</span></h1>
         
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h2 style="margin-bottom: 0;">🎬 Видео-аффирмация</h2>
                 <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
             </div>
-            <div id="videoContainer" class="video-container" style="min-height: 150px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
-                <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Выберите MP4 файл</p>
+            <div id="videoContainer" class="video-container">
+                <canvas id="slideshowCanvas" class="slideshow-canvas" width="400" height="300" style="width:100%; height:auto; min-height:250px;"></canvas>
+                <audio id="bgMusic" loop style="display:none;"></audio>
             </div>
             <div class="video-controls" id="videoControls" style="display: none;">
                 <button class="mute-btn" id="muteBtn">🔊</button>
-                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.7">
-                <span id="volumePercent" style="font-size: 12px;">70%</span>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+                <span id="volumePercent" style="font-size: 12px;">50%</span>
             </div>
         </div>
         
@@ -590,7 +427,6 @@
                     <input type="text" id="pasteKeyInput" placeholder="Вставить ключ для восстановления">
                     <button class="btn-secondary" id="restoreKeyBtn" style="margin:0; padding:8px 12px; width:auto;">Восстановить</button>
                 </div>
-                <p style="font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 5px;">Ваш уникальный ключ из движений пальца. Сохраните его.</p>
             </div>
         </div>
     </div>
@@ -606,6 +442,7 @@
     <audio id="swipeSound" preload="auto" style="display:none;"><source src="sounds/1.mp3" type="audio/mpeg"></audio>
     <audio id="clickSound" preload="auto" style="display:none;"><source src="sounds/2.mp3" type="audio/mpeg"></audio>
     <audio id="spaceSound" preload="auto" style="display:none;"><source src="sounds/3.mp3" type="audio/mpeg"></audio>
+    <audio id="bgMusic" preload="auto" style="display:none;"><source src="sounds/4.mp3" type="audio/mpeg"></audio>
 
     <script>
         // CANVAS
@@ -644,7 +481,6 @@
                 ctx.fillStyle = this.color;
                 ctx.globalAlpha = this.alpha;
                 ctx.fill();
-                ctx.globalAlpha = 1;
             }
         }
 
@@ -652,685 +488,390 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 1.2;
-                this.vy = (Math.random() - 0.5) * 1.2 - 0.5;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2 - 1;
                 this.life = 1.0;
-                this.size = Math.random() * 10 + 5;
+                this.size = Math.random() * 8 + 4;
                 this.color = `hsl(${Math.random() * 60 + 40}, 100%, 60%)`;
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.life -= 0.015;
-                this.size *= 0.98;
+                this.life -= 0.02;
+                this.size *= 0.97;
             }
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.globalAlpha = this.life * 0.7;
-                ctx.shadowBlur = 15;
+                ctx.shadowBlur = 12;
                 ctx.shadowColor = this.color;
                 ctx.fill();
                 ctx.shadowBlur = 0;
-                ctx.globalAlpha = 1;
             }
         }
 
-        function initBgParticles() {
-            bgParticles = [];
-            for(let i = 0; i < 50; i++) bgParticles.push(new BgParticle());
+        function addGlobalTrail(x, y) {
+            for(let i=0;i<2;i++) trailParticles.push(new TrailParticle(x + (Math.random()-0.5)*15, y + (Math.random()-0.5)*15));
         }
 
+        function initBgParticles() { bgParticles = []; for(let i=0;i<50;i++) bgParticles.push(new BgParticle()); }
         function animateCanvas() {
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            bgParticles.forEach(p => { p.update(); p.draw(); });
-            for (let i = trailParticles.length - 1; i >= 0; i--) {
-                let p = trailParticles[i];
-                p.update();
-                p.draw();
-                if (p.life <= 0) trailParticles.splice(i, 1);
-            }
+            ctx.clearRect(0,0,canvasWidth,canvasHeight);
+            bgParticles.forEach(p=>{p.update();p.draw();});
+            for(let i=trailParticles.length-1;i>=0;i--){let p=trailParticles[i];p.update();p.draw();if(p.life<=0)trailParticles.splice(i,1);}
             requestAnimationFrame(animateCanvas);
         }
 
-        function playSwipeSound() {
-            const audio = document.getElementById('swipeSound');
-            if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log('swipe sound blocked')); }
+        // СЛАЙДШОУ
+        let slideshowInterval = null;
+        let currentSlideIndex = 0;
+        let slideshowCanvas = null;
+        let slideshowCtx = null;
+        let currentAudio = null;
+        let audioPlaying = false;
+        
+        function initSlideshow() {
+            slideshowCanvas = document.getElementById('slideshowCanvas');
+            if(!slideshowCanvas) return;
+            slideshowCtx = slideshowCanvas.getContext('2d');
+            const container = slideshowCanvas.parentElement;
+            const width = container.clientWidth;
+            slideshowCanvas.width = width;
+            slideshowCanvas.height = Math.min(width * 0.75, 350);
+            
+            startSlideshow();
         }
-        function playClickSound() {
-            const audio = document.getElementById('clickSound');
-            if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log('click sound blocked')); }
+        
+        function startSlideshow() {
+            if(slideshowInterval) clearInterval(slideshowInterval);
+            updateSlide();
+            slideshowInterval = setInterval(updateSlide, 5000);
         }
-        function playSpaceSound() {
-            const audio = document.getElementById('spaceSound');
-            if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log('space sound blocked')); }
+        
+        function updateSlide() {
+            if(!slideshowCtx) return;
+            const photos = userData.photos || [];
+            const dreams = userData.dreams || [];
+            const audios = userData.audios || [];
+            
+            // Музыка
+            const bgMusic = document.getElementById('bgMusic');
+            if(bgMusic && !audioPlaying && !document.getElementById('affirmationVideo')) {
+                bgMusic.volume = 0.3;
+                bgMusic.loop = true;
+                bgMusic.play().catch(e=>console.log('audio play blocked'));
+                audioPlaying = true;
+            }
+            
+            // Выбор случайной фотографии
+            let img = null;
+            if(photos.length > 0) {
+                currentSlideIndex = (currentSlideIndex + 1) % photos.length;
+                const photoData = photos[currentSlideIndex].data;
+                img = new Image();
+                img.onload = () => drawSlide(img, dreams, audios);
+                img.src = photoData;
+            } else {
+                drawSlide(null, dreams, audios);
+            }
         }
+        
+        function drawSlide(img, dreams, audios) {
+            if(!slideshowCtx) return;
+            const w = slideshowCanvas.width;
+            const h = slideshowCanvas.height;
+            
+            // Градиент фон
+            const grad = slideshowCtx.createLinearGradient(0,0,0,h);
+            grad.addColorStop(0, '#0a0e27');
+            grad.addColorStop(1, '#2d1b4e');
+            slideshowCtx.fillStyle = grad;
+            slideshowCtx.fillRect(0,0,w,h);
+            
+            // Рисуем изображение если есть
+            if(img) {
+                const scale = Math.max(w / img.width, h / img.height);
+                const x = (w - img.width * scale) / 2;
+                const y = (h - img.height * scale) / 2;
+                slideshowCtx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                // Полупрозрачный слой
+                slideshowCtx.fillStyle = 'rgba(0,0,0,0.4)';
+                slideshowCtx.fillRect(0,0,w,h);
+            }
+            
+            // Рандомная мечта
+            let dreamText = "Твоя мечта здесь... ✨";
+            if(dreams.length > 0) {
+                const randomDream = dreams[Math.floor(Math.random() * dreams.length)];
+                dreamText = randomDream.text;
+            }
+            
+            // Текст с контуром
+            slideshowCtx.font = `bold ${Math.floor(w/20)}px 'Segoe UI'`;
+            slideshowCtx.textAlign = 'center';
+            slideshowCtx.shadowBlur = 0;
+            // Контур
+            slideshowCtx.strokeStyle = '#000';
+            slideshowCtx.lineWidth = 3;
+            slideshowCtx.strokeText(dreamText, w/2, h/2);
+            // Заливка
+            slideshowCtx.fillStyle = '#ffd700';
+            slideshowCtx.fillText(dreamText, w/2, h/2);
+            
+            // Нижняя подпись
+            slideshowCtx.font = `${Math.floor(w/30)}px 'Segoe UI'`;
+            slideshowCtx.fillStyle = 'rgba(255,255,255,0.6)';
+            slideshowCtx.fillText('✨ Твоя мечта ✨', w/2, h - 20);
+        }
+
+        function playSwipeSound() { const a=document.getElementById('swipeSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
+        function playClickSound() { const a=document.getElementById('clickSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
+        function playSpaceSound() { const a=document.getElementById('spaceSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
 
         const affirmationsMale = [
             "Я достоин всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю силу и уверенность 💪",
             "Деньги текут ко мне легко 💰", "Я здоров и полон энергии ⚡", "Я в безопасности и любим 🌈",
-            "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Моя жизнь наполнена радостью 😊",
-            "Я достигаю всех своих целей 🎯", "Я магнит для чудес ✨", "Мой успех неизбежен 📈",
-            "Я заслуживаю счастья 💖", "Вселенная поддерживает меня 🌌", "Я сияю как звезда ⭐"
+            "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Я достигаю всех целей 🎯"
         ];
         const affirmationsFemale = [
             "Я достойна всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю любовь и свет 💖",
             "Деньги текут ко мне легко 💰", "Я здорова и полна энергии ⚡", "Я в безопасности и любима 🌈",
-            "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Моя жизнь наполнена радостью 😊",
-            "Я достигаю всех своих целей 🎯", "Я магнит для чудес ✨", "Мой успех неизбежен 📈",
-            "Я заслуживаю счастья 💖", "Вселенная поддерживает меня 🌌", "Я сияю как звезда ⭐"
+            "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Я достигаю всех целей 🎯"
         ];
 
         let currentAffirmationInterval = null;
         let currentGender = 'male';
+        function getRandomAffirmation() { const affs=currentGender==='male'?affirmationsMale:affirmationsFemale; return affs[Math.floor(Math.random()*affs.length)]; }
+        function updateAffirmationCarousel() { const el=document.getElementById('dailyAffirmation'); if(el) el.textContent=getRandomAffirmation(); }
+        function startAffirmationCarousel() { if(currentAffirmationInterval) clearInterval(currentAffirmationInterval); updateAffirmationCarousel(); currentAffirmationInterval=setInterval(updateAffirmationCarousel,3000); }
 
-        function getRandomAffirmation() {
-            const affs = currentGender === 'male' ? affirmationsMale : affirmationsFemale;
-            return affs[Math.floor(Math.random() * affs.length)];
-        }
+        let entropyData=[], swipeCompleted=false, mediaRecorder=null, audioChunks=[], isRecording=false;
+        let userData = { key:null, name:'', gender:'male', dreams:[], photos:[], audios:[], sentToSpace:0, registered:false, audioNames:{}, spaceHistory:[] };
+        let currentVideoURL=null;
 
-        function updateAffirmationCarousel() {
-            const el = document.getElementById('dailyAffirmation');
-            if(el) el.textContent = getRandomAffirmation();
-        }
-
-        function startAffirmationCarousel() {
-            if(currentAffirmationInterval) clearInterval(currentAffirmationInterval);
-            updateAffirmationCarousel();
-            currentAffirmationInterval = setInterval(updateAffirmationCarousel, 3000);
-        }
-
-        let entropyData = [];
-        let swipeCompleted = false;
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
-        let userData = {
-            key: null, name: '', gender: 'male',
-            dreams: [], photos: [], audios: [], sentToSpace: 0, registered: false,
-            audioNames: {}, spaceHistory: []
-        };
-
-        let currentVideoURL = null;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            resizeCanvas();
-            initBgParticles();
-            animateCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            const saved = localStorage.getItem('happiness_app_user');
-            if (saved) {
-                userData = JSON.parse(saved);
-                currentGender = userData.gender || 'male';
-                showMainScreen();
-                startAffirmationCarousel();
-            }
-
-            document.querySelectorAll('.gender-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentGender = btn.dataset.gender;
-                });
-            });
+        window.addEventListener('DOMContentLoaded',()=>{
+            resizeCanvas(); initBgParticles(); animateCanvas(); window.addEventListener('resize',resizeCanvas);
+            const saved=localStorage.getItem('happiness_app_user');
+            if(saved){userData=JSON.parse(saved); currentGender=userData.gender||'male'; showMainScreen(); startAffirmationCarousel();}
+            document.querySelectorAll('.gender-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentGender=btn.dataset.gender;});});
+            document.getElementById('skipVoiceBtn')?.addEventListener('click',()=>{showScreen('screen-main');});
         });
 
-        const swipeArea = document.getElementById('swipeArea');
-        const entropyFill = document.getElementById('entropyFill');
-        const entropyText = document.getElementById('entropyText');
-        const btnToProfile2 = document.getElementById('btnToProfile');
-        
-        let pointsCollected = 0;
-        const requiredPoints = 1000;
+        // СВАЙП 1000 точек
+        const swipeArea=document.getElementById('swipeArea');
+        const entropyFill=document.getElementById('entropyFill');
+        const entropyText=document.getElementById('entropyText');
+        const btnToProfile2=document.getElementById('btnToProfile');
+        let pointsCollected=0, isSwiping=false;
+        const requiredPoints=1000;
 
-        let isSwiping = false;
-
-        function handleSwipeStart(e) {
-            if(swipeCompleted) return;
-            isSwiping = true;
-            swipeArea.classList.add('swiping');
-            e.preventDefault();
-        }
-
-        function handleSwipeMove(e) {
-            if(swipeCompleted || !isSwiping) return;
-            e.preventDefault();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            for(let i = 0; i < 3; i++) {
-                trailParticles.push(new TrailParticle(clientX + (Math.random() - 0.5) * 25, clientY + (Math.random() - 0.5) * 25));
-            }
-            
-            entropyData.push({ x: clientX, y: clientY, time: Date.now() });
-            pointsCollected++;
-            
-            if(pointsCollected % 20 === 0) playSwipeSound();
-            
-            const percent = Math.min(100, Math.floor((pointsCollected / requiredPoints) * 100));
-            entropyFill.style.width = percent + '%';
-            entropyText.textContent = percent + '% настроено';
-            
-            if (pointsCollected >= requiredPoints && !swipeCompleted) {
-                swipeCompleted = true;
-                isSwiping = false;
-                swipeArea.classList.remove('swiping');
-                swipeArea.classList.add('completed');
-                btnToProfile2.disabled = false;
-                btnToProfile2.textContent = '✨ Готово! Далее →';
-                entropyText.textContent = '100% настроено! ✅';
-                playClickSound();
+        function handleSwipeStart(e){if(swipeCompleted)return; isSwiping=true; swipeArea.classList.add('swiping'); e.preventDefault();}
+        function handleSwipeMove(e){
+            if(swipeCompleted||!isSwiping)return; e.preventDefault();
+            const cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY;
+            for(let i=0;i<2;i++) trailParticles.push(new TrailParticle(cx+(Math.random()-0.5)*20,cy+(Math.random()-0.5)*20));
+            entropyData.push({x:cx,y:cy,time:Date.now()}); pointsCollected++;
+            if(pointsCollected%30===0) playSwipeSound();
+            const percent=Math.min(100,Math.floor((pointsCollected/requiredPoints)*100));
+            entropyFill.style.width=percent+'%'; entropyText.textContent=percent+'% настроено';
+            if(pointsCollected>=requiredPoints&&!swipeCompleted){
+                swipeCompleted=true; isSwiping=false; swipeArea.classList.remove('swiping');
+                btnToProfile2.disabled=false; btnToProfile2.textContent='✨ Готово! Далее →';
+                entropyText.textContent='100% настроено! ✅'; playClickSound();
             }
         }
+        function handleSwipeEnd(){isSwiping=false; swipeArea.classList.remove('swiping');}
+        swipeArea?.addEventListener('touchstart',handleSwipeStart,{passive:false});
+        swipeArea?.addEventListener('touchmove',handleSwipeMove,{passive:false});
+        swipeArea?.addEventListener('touchend',handleSwipeEnd);
+        swipeArea?.addEventListener('mousedown',handleSwipeStart);
+        swipeArea?.addEventListener('mousemove',handleSwipeMove);
+        swipeArea?.addEventListener('mouseup',handleSwipeEnd);
 
-        function handleSwipeEnd() {
-            isSwiping = false;
-            swipeArea.classList.remove('swiping');
-        }
+        async function generateKey(){const raw=JSON.stringify({entropy:entropyData,time:Date.now()}); const encoder=new TextEncoder(); const hashBuffer=await crypto.subtle.digest('SHA-256',encoder.encode(raw)); return Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+        btnToProfile2?.addEventListener('click',async()=>{if(!swipeCompleted)return; userData.key=await generateKey(); showScreen('screen-profile');});
+        document.getElementById('btnToVoice')?.addEventListener('click',()=>{userData.name=document.getElementById('userName').value.trim()||'Путник'; userData.gender=currentGender; if(!userData.name){alert('Как тебя зовут?');return;} saveUserData(); showScreen('screen-voice');});
 
-        if(swipeArea) {
-            swipeArea.addEventListener('touchstart', handleSwipeStart, { passive: false });
-            swipeArea.addEventListener('touchmove', handleSwipeMove, { passive: false });
-            swipeArea.addEventListener('touchend', handleSwipeEnd);
-            swipeArea.addEventListener('mousedown', handleSwipeStart);
-            swipeArea.addEventListener('mousemove', handleSwipeMove);
-            swipeArea.addEventListener('mouseup', handleSwipeEnd);
-        }
-
-        async function generateKey() {
-            const raw = JSON.stringify({ entropy: entropyData, time: Date.now() });
-            const encoder = new TextEncoder();
-            const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(raw));
-            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        btnToProfile2.addEventListener('click', async () => {
-            if(!swipeCompleted) return;
-            userData.key = await generateKey();
-            showScreen('screen-profile');
-        });
-
-        document.getElementById('btnToVoice').addEventListener('click', () => {
-            userData.name = document.getElementById('userName').value.trim() || 'Путник';
-            userData.gender = currentGender;
-            if (!userData.name) { alert('Как тебя зовут?'); return; }
-            saveUserData();
-            showScreen('screen-voice');
-        });
-
-        function setupRecording(recordBtnId, stopBtnId, statusId, listId) {
-            const recordBtn = document.getElementById(recordBtnId);
-            const stopBtn = document.getElementById(stopBtnId);
-            const statusEl = document.getElementById(statusId);
-            
-            recordBtn.addEventListener('click', async () => {
-                if(isRecording) return;
-                playClickSound();
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            const id = Date.now();
-                            userData.audios.push({ id: id, data: reader.result, date: new Date().toISOString() });
-                            if(!userData.audioNames) userData.audioNames = {};
-                            userData.audioNames[id] = `Запись ${userData.audios.length}`;
-                            saveUserData();
-                            renderAudioList(listId);
-                            statusEl.innerHTML = '✅ Запись сохранена!';
+        function setupRecording(recordBtnId,stopBtnId,statusId,listId){
+            const recordBtn=document.getElementById(recordBtnId), stopBtn=document.getElementById(stopBtnId), statusEl=document.getElementById(statusId);
+            recordBtn?.addEventListener('click',async()=>{
+                if(isRecording)return; playClickSound();
+                try{
+                    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+                    mediaRecorder=new MediaRecorder(stream); audioChunks=[];
+                    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+                    mediaRecorder.onstop=()=>{
+                        const blob=new Blob(audioChunks,{type:'audio/webm'});
+                        const reader=new FileReader();
+                        reader.onloadend=()=>{
+                            const id=Date.now();
+                            userData.audios.push({id:id,data:reader.result,date:new Date().toISOString()});
+                            if(!userData.audioNames) userData.audioNames={};
+                            userData.audioNames[id]=`Запись ${userData.audios.length}`;
+                            saveUserData(); renderAudioList(listId);
+                            statusEl.innerHTML='✅ Запись сохранена!';
                         };
                         reader.readAsDataURL(blob);
-                        stream.getTracks().forEach(track => track.stop());
+                        stream.getTracks().forEach(t=>t.stop());
                     };
-                    mediaRecorder.start();
-                    isRecording = true;
-                    recordBtn.classList.add('recording');
-                    stopBtn.style.opacity = '1';
-                    statusEl.innerHTML = '<span class="recording-dot"></span> 🔴 ИДЁТ ЗАПИСЬ...';
-                } catch(err) { alert('Нет доступа к микрофону'); }
+                    mediaRecorder.start(); isRecording=true; recordBtn.classList.add('recording');
+                    stopBtn.style.opacity='1'; statusEl.innerHTML='<span class="recording-dot"></span> 🔴 ИДЁТ ЗАПИСЬ...';
+                } catch(err){alert('Нет доступа к микрофону');}
             });
-            
-            stopBtn.addEventListener('click', () => {
-                if(mediaRecorder && mediaRecorder.state !== 'inactive') {
-                    playClickSound();
-                    mediaRecorder.stop();
-                    isRecording = false;
-                    recordBtn.classList.remove('recording');
-                    stopBtn.style.opacity = '0.5';
-                    statusEl.innerHTML = '⏸ Запись остановлена';
-                }
+            stopBtn?.addEventListener('click',()=>{
+                if(mediaRecorder&&mediaRecorder.state!=='inactive'){playClickSound(); mediaRecorder.stop(); isRecording=false; recordBtn.classList.remove('recording'); stopBtn.style.opacity='0.5'; statusEl.innerHTML='⏸ Запись остановлена';}
             });
         }
+        function renameAudio(id,listId){const newName=prompt('Введите новое имя:',userData.audioNames?.[id]||`Запись ${id}`); if(newName&&newName.trim()){if(!userData.audioNames)userData.audioNames={}; userData.audioNames[id]=newName.trim(); saveUserData(); renderAudioList(listId);}}
+        function renderAudioList(listId){const container=document.getElementById(listId); if(!container)return; if(!userData.audios||userData.audios.length===0){container.innerHTML='<p style="color:rgba(255,255,255,0.5);text-align:center;">Нет записей</p>'; return;}
+            container.innerHTML=userData.audios.map(a=>`<div class="audio-item"><div class="audio-name"><span onclick="renameAudio(${a.id},'${listId}')">✏️ ${userData.audioNames?.[a.id]||'Запись'}</span><span style="font-size:11px;">${new Date(a.date).toLocaleDateString()}</span></div><audio controls src="${a.data}" style="width:100%; height:36px;"></audio></div>`).join('');}
+        setupRecording('recordBtn','stopBtn','recordStatus','audioList');
+        setupRecording('recordBtnMain','stopBtnMain','recordStatusMain','audioListMain');
 
-        function renameAudio(id, listId) {
-            const newName = prompt('Введите новое имя:', userData.audioNames?.[id] || `Запись ${id}`);
-            if(newName && newName.trim()) {
-                if(!userData.audioNames) userData.audioNames = {};
-                userData.audioNames[id] = newName.trim();
-                saveUserData();
-                renderAudioList(listId);
-            }
-        }
+        document.getElementById('btnToMain')?.addEventListener('click',()=>{userData.registered=true; saveUserData(); showMainScreen(); startAffirmationCarousel(); initSlideshow();});
 
-        function renderAudioList(listId) {
-            const container = document.getElementById(listId);
-            if(!container) return;
-            if(!userData.audios || userData.audios.length === 0) {
-                container.innerHTML = '<p style="color:rgba(255,255,255,0.5);text-align:center;">Нет записей</p>';
-                return;
-            }
-            container.innerHTML = userData.audios.map(a => `
-                <div class="audio-item">
-                    <div class="audio-name">
-                        <span onclick="renameAudio(${a.id}, '${listId}')">✏️ ${userData.audioNames?.[a.id] || 'Запись'}</span>
-                        <span style="font-size:11px;">${new Date(a.date).toLocaleDateString()}</span>
-                    </div>
-                    <audio controls src="${a.data}" style="width:100%; height:36px;"></audio>
-                </div>
-            `).join('');
-        }
-
-        setupRecording('recordBtn', 'stopBtn', 'recordStatus', 'audioList');
-        setupRecording('recordBtnMain', 'stopBtnMain', 'recordStatusMain', 'audioListMain');
-
-        document.getElementById('btnToMain').addEventListener('click', () => {
-            userData.registered = true;
-            saveUserData();
-            showMainScreen();
-            startAffirmationCarousel();
-        });
-
-        function showMainScreen() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        function showMainScreen(){
+            document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
             document.getElementById('screen-main').classList.add('active');
-            document.getElementById('tabBar').style.display = 'flex';
-            document.getElementById('mainUserName').textContent = userData.name;
-            document.getElementById('statDreams').textContent = userData.dreams.length;
-            document.getElementById('statSent').textContent = userData.sentToSpace;
-            const keyShort = userData.key ? userData.key.substring(0,20)+'...' : 'Нет ключа';
-            document.getElementById('userKeyDisplay').textContent = keyShort;
-            renderAudioList('audioList');
-            renderAudioList('audioListMain');
-            renderPhotos();
-            renderDreamsList();
-            renderHistoryList();
-            initTabs();
+            document.getElementById('tabBar').style.display='flex';
+            document.getElementById('mainUserName').textContent=userData.name;
+            document.getElementById('statDreams').textContent=userData.dreams.length;
+            document.getElementById('statSent').textContent=userData.sentToSpace;
+            const keyShort=userData.key?userData.key.substring(0,20)+'...':'Нет ключа';
+            document.getElementById('userKeyDisplay').textContent=keyShort;
+            renderAudioList('audioList'); renderAudioList('audioListMain');
+            renderPhotos(); renderDreamsList(); renderHistoryList(); initTabs();
         }
-
-        function initTabs() {
-            document.querySelectorAll('.tab-item').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        function initTabs(){
+            document.querySelectorAll('.tab-item').forEach(tab=>{
+                tab.addEventListener('click',()=>{
+                    document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
                     tab.classList.add('active');
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                    document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
-                    if(tab.dataset.tab === 'home') startAffirmationCarousel();
-                    if(tab.dataset.tab === 'dreams') {
-                        renderDreamsList();
-                        renderPhotos();
-                    }
-                    if(tab.dataset.tab === 'space') renderHistoryList();
+                    document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));
+                    document.getElementById('tab-'+tab.dataset.tab).classList.remove('hidden');
+                    if(tab.dataset.tab==='home') startAffirmationCarousel();
+                    if(tab.dataset.tab==='dreams'){renderDreamsList(); renderPhotos();}
+                    if(tab.dataset.tab==='space') renderHistoryList();
                 });
             });
         }
+        function addDream(){const text=document.getElementById('dreamText')?.value.trim(); if(!text)return; playClickSound(); userData.dreams.push({id:Date.now(),text,date:new Date().toISOString()}); document.getElementById('dreamText').value=''; document.getElementById('statDreams').textContent=userData.dreams.length; saveUserData(); renderDreamsList(); alert('✨ Мечта сохранена!');}
+        document.getElementById('addDreamBtn')?.addEventListener('click',addDream);
+        document.getElementById('refreshAffirmationBtn')?.addEventListener('click',()=>{playClickSound(); updateAffirmationCarousel();});
 
-        function addDream() {
-            const text = document.getElementById('dreamText').value.trim();
-            if(!text) return;
-            playClickSound();
-            userData.dreams.push({ id: Date.now(), text, date: new Date().toISOString() });
-            document.getElementById('dreamText').value = '';
-            document.getElementById('statDreams').textContent = userData.dreams.length;
-            saveUserData();
-            renderDreamsList();
-            alert('✨ Мечта сохранена!');
-        }
+        function editDream(id){const dream=userData.dreams.find(d=>d.id===id); if(!dream)return; const newText=prompt('Редактировать мечту:',dream.text); if(newText&&newText.trim()){dream.text=newText.trim(); saveUserData(); renderDreamsList();}}
+        function deleteDream(id){if(confirm('Удалить мечту?')){userData.dreams=userData.dreams.filter(d=>d.id!==id); saveUserData(); renderDreamsList(); document.getElementById('statDreams').textContent=userData.dreams.length;}}
+        function renderDreamsList(){const container=document.getElementById('dreamsList'); if(!container)return; if(userData.dreams.length===0){container.innerHTML='<p style="color:rgba(255,255,255,0.5);text-align:center;">Нет мечт. Добавьте первую ✨</p>'; return;}
+            container.innerHTML=userData.dreams.map(dream=>`<div class="dream-item"><div style="display:flex;justify-content:space-between;"><span style="color:#ffd700;">#${dream.id.toString().slice(-6)}</span><div><button onclick="editDream(${dream.id})" style="background:none;border:none;color:#ffd700;cursor:pointer;">✏️</button><button onclick="deleteDream(${dream.id})" style="background:none;border:none;color:#ff6b9d;cursor:pointer;">🗑️</button></div></div><p style="word-break:break-word;">${escapeHtml(dream.text)}</p><div style="font-size:10px;color:rgba(255,255,255,0.3);">${new Date(dream.date).toLocaleDateString()}</div></div>`).join('');}
+        function escapeHtml(text){return text.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;'; if(m==='<')return'&lt;'; if(m==='>')return'&gt;'; return m;});}
 
-        document.getElementById('addDreamBtn').addEventListener('click', addDream);
-        document.getElementById('refreshAffirmationBtn').addEventListener('click', () => {
-            playClickSound();
-            updateAffirmationCarousel();
-        });
+        function addPhotos(event){const files=Array.from(event.target.files); files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos(); if(slideshowInterval)updateSlide();}; reader.readAsDataURL(file);});}
+        function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos(); if(slideshowInterval)updateSlide();}
+        function renderPhotos(){const grid=document.getElementById('photoGrid'); if(!grid)return; document.getElementById('photoCount').textContent=userData.photos.length; if(userData.photos.length===0){grid.innerHTML='<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)"></label>'; return;}
+            const photosHtml=userData.photos.map((p,idx)=>`<div class="photo-item"><div class="delete-photo" onclick="deletePhoto(${idx})">✖</div><img src="${p.data}"></div>`).join('');
+            grid.innerHTML=photosHtml+'<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)"></label>';}
 
-        function editDream(id) {
-            const dream = userData.dreams.find(d => d.id === id);
-            if(!dream) return;
-            const newText = prompt('Редактировать мечту:', dream.text);
-            if(newText && newText.trim()) {
-                dream.text = newText.trim();
-                saveUserData();
-                renderDreamsList();
-            }
-        }
-
-        function deleteDream(id) {
-            if(confirm('Удалить мечту?')) {
-                userData.dreams = userData.dreams.filter(d => d.id !== id);
-                saveUserData();
-                renderDreamsList();
-                document.getElementById('statDreams').textContent = userData.dreams.length;
-            }
-        }
-
-        function renderDreamsList() {
-            const container = document.getElementById('dreamsList');
-            if(!container) return;
-            if(userData.dreams.length === 0) {
-                container.innerHTML = '<p style="color:rgba(255,255,255,0.5);text-align:center;">Нет мечт. Добавьте первую ✨</p>';
-                return;
-            }
-            container.innerHTML = userData.dreams.map(dream => `
-                <div class="dream-item">
-                    <div style="display:flex;justify-content:space-between;">
-                        <span style="color:#ffd700;">#${dream.id.toString().slice(-6)}</span>
-                        <div>
-                            <button onclick="editDream(${dream.id})" style="background:none;border:none;color:#ffd700;cursor:pointer;">✏️</button>
-                            <button onclick="deleteDream(${dream.id})" style="background:none;border:none;color:#ff6b9d;cursor:pointer;">🗑️</button>
-                        </div>
-                    </div>
-                    <p>${escapeHtml(dream.text)}</p>
-                    <div style="font-size:10px; color:rgba(255,255,255,0.3);">${new Date(dream.date).toLocaleDateString()}</div>
-                </div>
-            `).join('');
-        }
-
-        function escapeHtml(text) {
-            return text.replace(/[&<>]/g, function(m) {
-                if(m === '&') return '&amp;';
-                if(m === '<') return '&lt;';
-                if(m === '>') return '&gt;';
-                return m;
-            });
-        }
-
-        function addPhotos(event) {
-            const files = Array.from(event.target.files);
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    userData.photos.push({ id: Date.now()+Math.random(), data: e.target.result });
-                    saveUserData();
-                    renderPhotos();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function deletePhoto(index) {
-            userData.photos.splice(index, 1);
-            saveUserData();
-            renderPhotos();
-        }
-
-        function renderPhotos() {
-            const grid = document.getElementById('photoGrid');
-            if(!grid) return;
-            document.getElementById('photoCount').textContent = userData.photos.length;
-            if(userData.photos.length === 0) {
-                grid.innerHTML = `<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)"></label>`;
-                return;
-            }
-            const photosHtml = userData.photos.map((p, idx) => `
-                <div class="photo-item">
-                    <div class="delete-photo" onclick="deletePhoto(${idx})">✖</div>
-                    <img src="${p.data}">
-                </div>
-            `).join('');
-            grid.innerHTML = photosHtml + `<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)"></label>`;
-        }
-
-        function handleSelectVideo() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'video/mp4';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if(file) {
+        function handleSelectVideo(){
+            const input=document.createElement('input'); input.type='file'; input.accept='video/mp4';
+            input.onchange=e=>{
+                const file=e.target.files[0]; if(file){
                     if(currentVideoURL) URL.revokeObjectURL(currentVideoURL);
-                    currentVideoURL = URL.createObjectURL(file);
-                    const container = document.getElementById('videoContainer');
-                    container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${currentVideoURL}" loop autoplay></video>`;
-                    const video = document.getElementById('affirmationVideo');
-                    document.getElementById('videoControls').style.display = 'flex';
-                    
-                    const volumeSlider = document.getElementById('volumeSlider');
-                    const volumePercent = document.getElementById('volumePercent');
-                    const muteBtn = document.getElementById('muteBtn');
-                    let isMuted = false;
-                    
-                    video.volume = 0.7;
-                    volumeSlider.value = 0.7;
-                    volumePercent.textContent = '70%';
-                    
-                    volumeSlider.oninput = () => {
-                        video.volume = parseFloat(volumeSlider.value);
-                        volumePercent.textContent = Math.round(video.volume * 100) + '%';
-                        isMuted = false;
-                        muteBtn.textContent = '🔊';
-                        video.muted = false;
-                    };
-                    muteBtn.onclick = () => {
-                        isMuted = !isMuted;
-                        video.muted = isMuted;
-                        muteBtn.textContent = isMuted ? '🔇' : '🔊';
-                    };
+                    currentVideoURL=URL.createObjectURL(file);
+                    const container=document.getElementById('videoContainer');
+                    if(slideshowInterval) clearInterval(slideshowInterval);
+                    if(window.bgMusic) window.bgMusic.pause();
+                    container.innerHTML=`<video id="affirmationVideo" class="affirmation-video" src="${currentVideoURL}" loop autoplay style="width:100%"></video>`;
+                    const video=document.getElementById('affirmationVideo');
+                    document.getElementById('videoControls').style.display='flex';
+                    const volSlider=document.getElementById('volumeSlider'), volPercent=document.getElementById('volumePercent'), muteBtn=document.getElementById('muteBtn');
+                    let muted=false;
+                    video.volume=0.5; volSlider.value=0.5; volPercent.textContent='50%';
+                    volSlider.oninput=()=>{video.volume=parseFloat(volSlider.value); volPercent.textContent=Math.round(video.volume*100)+'%'; muted=false; muteBtn.textContent='🔊'; video.muted=false;};
+                    muteBtn.onclick=()=>{muted=!muted; video.muted=muted; muteBtn.textContent=muted?'🔇':'🔊';};
                 }
             };
             input.click();
         }
+        document.getElementById('selectVideoBtn')?.addEventListener('click',handleSelectVideo);
 
-        document.getElementById('selectVideoBtn').addEventListener('click', handleSelectVideo);
+        function textToBinary(text){let binary=''; for(let i=0;i<Math.min(text.length,300);i++){binary+=text.charCodeAt(i).toString(2).padStart(8,'0')+' ';} return binary.trim();}
+        function renderHistoryList(){const container=document.getElementById('historyList'); if(!container)return; if(!userData.spaceHistory||userData.spaceHistory.length===0){container.innerHTML='<p style="color:rgba(255,255,255,0.5);text-align:center;">История пуста</p>'; return;}
+            container.innerHTML=userData.spaceHistory.slice().reverse().map(h=>`<div class="history-item"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="color:#ffd700;">🚀 #${h.id}</span><span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span><button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Код</button></div><div style="margin-top:5px; font-size:12px; word-break:break-word;">${escapeHtml(h.dreamsText.substring(0,150))}${h.dreamsText.length>150?'...':''}</div><div id="binary-${h.id}" style="display:none;" class="history-binary"></div></div>`).join('');}
+        window.showBinaryCode=function(id){const history=userData.spaceHistory.find(h=>h.id===id); if(history){const div=document.getElementById(`binary-${id}`); if(div.style.display==='none'){div.innerHTML=`<strong>Бинарный код:</strong><br>${history.binaryCode}`; div.style.display='block';}else{div.style.display='none';}}};
+        function updateSpaceLogAndHistory(){renderHistoryList(); const log=document.getElementById('spaceLog'); const time=new Date().toLocaleTimeString('ru'); log.innerHTML=`🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос!<br>`+log.innerHTML; if(log.innerHTML.split('<br>').length>10) log.innerHTML=log.innerHTML.split('<br>').slice(0,10).join('<br>');}
 
-        function textToBinary(text) {
-            let binary = '';
-            for(let i=0; i<Math.min(text.length, 200); i++) {
-                binary += text.charCodeAt(i).toString(2).padStart(8,'0') + ' ';
-            }
-            return binary.trim();
-        }
-
-        function renderHistoryList() {
-            const container = document.getElementById('historyList');
-            if(!container) return;
-            if(!userData.spaceHistory || userData.spaceHistory.length === 0) {
-                container.innerHTML = '<p style="color:rgba(255,255,255,0.5);text-align:center;">История пуста. Отправьте мечту в космос 🚀</p>';
-                return;
-            }
-            container.innerHTML = userData.spaceHistory.slice().reverse().map(h => `
-                <div class="history-item">
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                        <span style="color:#ffd700;">🚀 #${h.id}</span>
-                        <span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span>
-                        <button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Бинарный код</button>
-                    </div>
-                    <div style="margin-top:5px; font-size:12px;">${escapeHtml(h.dreamsText.substring(0, 100))}${h.dreamsText.length > 100 ? '...' : ''}</div>
-                    <div id="binary-${h.id}" style="display:none;" class="history-binary"></div>
-                </div>
-            `).join('');
-        }
-
-        window.showBinaryCode = function(id) {
-            const history = userData.spaceHistory.find(h => h.id === id);
-            if(history) {
-                const div = document.getElementById(`binary-${id}`);
-                if(div.style.display === 'none') {
-                    div.innerHTML = `<strong>Бинарный код:</strong><br>${history.binaryCode}`;
-                    div.style.display = 'block';
-                } else {
-                    div.style.display = 'none';
-                }
-            }
-        }
-
-        function updateSpaceLogAndHistory() {
-            renderHistoryList();
-            const log = document.getElementById('spaceLog');
-            const time = new Date().toLocaleTimeString('ru');
-            log.innerHTML = `🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос!<br>` + log.innerHTML;
-            if(log.innerHTML.split('<br>').length > 10) {
-                log.innerHTML = log.innerHTML.split('<br>').slice(0, 10).join('<br>');
-            }
-        }
-
-        async function sendToSpace() {
-            if(userData.dreams.length === 0) { alert('Сначала добавь мечту'); return; }
+        async function sendToSpace(){
+            if(userData.dreams.length===0){alert('Сначала добавь мечту'); return;}
             playSpaceSound();
+            const allDreamsText=userData.dreams.map(d=>d.text).join(' | ');
+            const binaryCode=textToBinary(allDreamsText);
+            userData.spaceHistory.push({id:Date.now(),date:new Date().toISOString(),dreamsText:allDreamsText,binaryCode:binaryCode,dreamCount:userData.dreams.length});
             
-            const allDreamsText = userData.dreams.map(d => d.text).join(' | ');
-            const binaryCode = textToBinary(allDreamsText);
-            
-            const spaceMessage = {
-                id: Date.now(),
-                date: new Date().toISOString(),
-                dreamsText: allDreamsText,
-                binaryCode: binaryCode,
-                dreamCount: userData.dreams.length
-            };
-            
-            if(!userData.spaceHistory) userData.spaceHistory = [];
-            userData.spaceHistory.push(spaceMessage);
-            
-            const overlay = document.createElement('div');
-            overlay.className = 'space-overlay';
-            const messages = ["🌌 МЕЧТЫ В БИТЫ", "📡 СИГНАЛ ОТПРАВЛЕН", "✨ В БЕСКОНЕЧНОСТЬ", "🚀 ЧАСТОТА 7.83 ГЦ", "⭐ ОРБИТА ДОСТИГНУТА"];
-            overlay.innerHTML = `
-                <div style="color:#ffd700;font-size:22px;margin-bottom:20px;">✨ ОТПРАВКА В КОСМОС ✨</div>
+            const overlay=document.createElement('div'); overlay.className='space-overlay';
+            overlay.innerHTML=`<div style="color:#ffd700;font-size:22px;margin-bottom:20px;">✨ ОТПРАВКА В КОСМОС ✨</div>
+                <canvas id="spaceAnimCanvas" class="space-animation-canvas" width="300" height="300"></canvas>
                 <div class="binary-runner" id="binaryRunner"></div>
-                <div style="margin-top:30px;color:#00ffaa;text-align:center;" id="statusMessage">⚡ Преобразование...</div>
-            `;
+                <div style="margin-top:20px;color:#00ffaa;text-align:center;" id="statusMessage">⚡ Преобразование...</div>`;
             document.body.appendChild(overlay);
             
-            const runnerDiv = document.getElementById('binaryRunner');
-            const statusDiv = document.getElementById('statusMessage');
-            const binaryArray = binaryCode.split(' ');
-            let index = 0;
-            let running = '';
+            // Анимация с кольцами и антенной
+            const animCanvas=document.getElementById('spaceAnimCanvas');
+            const animCtx=animCanvas.getContext('2d');
+            let frame=0;
+            function drawSpaceAnim(){
+                animCtx.fillStyle='#000'; animCtx.fillRect(0,0,300,300);
+                for(let i=0;i<80;i++){animCtx.fillStyle=`rgba(255,255,255,${Math.random()*0.8})`; animCtx.fillRect(Math.random()*300,Math.random()*300,1,1);}
+                animCtx.beginPath(); animCtx.moveTo(150,250); animCtx.lineTo(150,100); animCtx.strokeStyle='#ffd700'; animCtx.lineWidth=2; animCtx.stroke();
+                for(let i=0;i<5;i++){const r=(frame*3+i*30)%120; animCtx.beginPath(); animCtx.arc(150,120,r+15,0,Math.PI*2); animCtx.strokeStyle=`rgba(0,255,255,${0.6-r/200})`; animCtx.lineWidth=1.5; animCtx.stroke();}
+                for(let i=0;i<30;i++){const x=150+Math.sin(frame*0.05+i)*(frame%120); const y=120-(frame*1.2+i*6)%180; const ch=Math.random()>0.5?'1':'0'; animCtx.fillStyle=`rgba(255,215,0,${1-y/180})`; animCtx.font='12px monospace'; animCtx.fillText(ch,x,y);}
+                frame++;
+                if(frame<150) requestAnimationFrame(drawSpaceAnim);
+            }
+            drawSpaceAnim();
             
-            function animateBinary() {
-                if(index < binaryArray.length) {
-                    running = binaryArray[index] + ' ' + running;
-                    if(running.length > 80) running = running.substring(0,80);
-                    runnerDiv.innerHTML = `<div class="binary-line">${running}</div><div class="binary-line" style="color:#ff6b9d;">${binaryArray[index]} →</div>`;
-                    index++;
-                    setTimeout(animateBinary, 15);
+            const runnerDiv=document.getElementById('binaryRunner');
+            const statusDiv=document.getElementById('statusMessage');
+            const binaryArray=binaryCode.split(' ');
+            let idx=0, running='';
+            const msgs=["🌌 МЕЧТЫ В БИТЫ","📡 СИГНАЛ ОТПРАВЛЕН","✨ В БЕСКОНЕЧНОСТЬ","🚀 ЧАСТОТА 7.83 ГЦ","⭐ ОРБИТА ДОСТИГНУТА"];
+            
+            function animateBinary(){
+                if(idx<binaryArray.length){
+                    running=binaryArray[idx]+' '+running; if(running.length>100) running=running.substring(0,100);
+                    runnerDiv.innerHTML=`<div class="binary-line">${running}</div><div class="binary-line" style="color:#ff6b9d;">${binaryArray[idx]} →</div>`;
+                    idx++; setTimeout(animateBinary,12);
                 } else {
-                    let msgIndex = 0;
-                    function showMessages() {
-                        if(msgIndex < messages.length) {
-                            statusDiv.innerHTML = messages[msgIndex];
-                            msgIndex++;
-                            setTimeout(showMessages, 700);
-                        } else {
-                            setTimeout(() => {
-                                overlay.remove();
-                                userData.sentToSpace++;
-                                document.getElementById('statSent').textContent = userData.sentToSpace;
-                                saveUserData();
-                                updateSpaceLogAndHistory();
-                                if(navigator.vibrate) navigator.vibrate(200);
-                                alert('🌠 Мечты отправлены в космос!\n📡 Ожидайте исполнения в течение 28 дней');
-                            }, 1000);
-                        }
-                    }
-                    showMessages();
+                    let mIdx=0;
+                    function showMsgs(){if(mIdx<msgs.length){statusDiv.innerHTML=msgs[mIdx]; mIdx++; setTimeout(showMsgs,600);}else{setTimeout(()=>{overlay.remove(); userData.sentToSpace++; document.getElementById('statSent').textContent=userData.sentToSpace; saveUserData(); updateSpaceLogAndHistory(); if(navigator.vibrate)navigator.vibrate(200); alert('🌠 Мечты отправлены в космос!\n✨ Ожидайте исполнения ✨');},1000);}}
+                    showMsgs();
                 }
             }
             animateBinary();
         }
 
-        document.getElementById('sendToSpaceBtn').addEventListener('click', sendToSpace);
+        document.getElementById('sendToSpaceBtn')?.addEventListener('click',sendToSpace);
 
-        function exportProfile() {
-            const dataStr = JSON.stringify(userData);
-            const blob = new Blob([dataStr], {type:'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `dream_backup_${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            alert('💾 Бэкап сохранён');
-        }
+        function exportProfile(){const dataStr=JSON.stringify(userData); const blob=new Blob([dataStr],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`dream_backup_${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); alert('💾 Бэкап сохранён');}
+        function importProfile(file){if(!file)return; const reader=new FileReader(); reader.onload=e=>{try{const imported=JSON.parse(e.target.result); if(imported.key&&imported.dreams!==undefined){userData=imported; saveUserData(); alert('✅ Восстановлено! Перезапустите.'); location.reload();}else alert('❌ Неверный формат');}catch(err){alert('Ошибка чтения');}}; reader.readAsText(file);}
+        function resetProfile(){const name=prompt('⚠️ СБРОС ВСЕХ ДАННЫХ\n\nВведите ваше имя:', ''); if(name===userData.name){if(confirm('ВСЕ данные будут УДАЛЕНЫ. Продолжить?')){localStorage.removeItem('happiness_app_user'); alert('✅ Данные сброшены. Перезагрузка.'); location.reload();}}else{alert('❌ Имя не совпадает');}}
+        function copyKey(){if(userData.key){navigator.clipboard.writeText(userData.key).then(()=>alert('✅ Ключ скопирован!'));}else alert('Ключ не сгенерирован');}
+        function restoreFromKey(){const inputKey=document.getElementById('pasteKeyInput')?.value.trim(); if(!inputKey){alert('Введите ключ'); return;} if(inputKey.length===64){userData.key=inputKey; saveUserData(); alert('✅ Ключ восстановлен! Перезапустите.'); location.reload();}else alert('❌ Неверный формат');}
+        document.getElementById('exportBtn')?.addEventListener('click',exportProfile);
+        document.getElementById('importBtn')?.addEventListener('click',()=>{document.getElementById('importFileInput').click();});
+        document.getElementById('importFileInput')?.addEventListener('change',e=>{if(e.target.files[0]) importProfile(e.target.files[0]);});
+        document.getElementById('resetBtn')?.addEventListener('click',resetProfile);
+        document.getElementById('subscribeBtn')?.addEventListener('click',()=>alert('💎 Подписка 10₽/день\nОплата: СБП, карты, крипта'));
+        document.getElementById('copyKeyBtn')?.addEventListener('click',copyKey);
+        document.getElementById('restoreKeyBtn')?.addEventListener('click',restoreFromKey);
 
-        function importProfile(file) {
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if(imported.key && imported.dreams !== undefined) {
-                        userData = imported;
-                        saveUserData();
-                        alert('✅ Восстановлено! Перезапустите.');
-                        location.reload();
-                    } else alert('❌ Неверный формат');
-                } catch(err) { alert('Ошибка чтения файла'); }
-            };
-            reader.readAsText(file);
-        }
+        function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id)?.classList.add('active');}
+        function saveUserData(){localStorage.setItem('happiness_app_user',JSON.stringify(userData));}
 
-        function resetProfile() {
-            const name = prompt('⚠️ СБРОС ВСЕХ ДАННЫХ\n\nВведите ваше имя для подтверждения:', '');
-            if(name === userData.name) {
-                if(confirm('ВСЕ данные будут УДАЛЕНЫ безвозвратно. Продолжить?')) {
-                    localStorage.removeItem('happiness_app_user');
-                    alert('✅ Все данные сброшены. Приложение перезагрузится.');
-                    location.reload();
-                }
-            } else {
-                alert('❌ Имя не совпадает. Сброс отменён.');
-            }
-        }
-
-        function copyKey() {
-            if(userData.key) {
-                navigator.clipboard.writeText(userData.key).then(() => alert('✅ Ключ скопирован!'));
-            } else alert('Ключ ещё не сгенерирован');
-        }
-
-        function restoreFromKey() {
-            const inputKey = document.getElementById('pasteKeyInput').value.trim();
-            if(!inputKey) { alert('Введите ключ'); return; }
-            if(inputKey.length === 64) {
-                userData.key = inputKey;
-                saveUserData();
-                alert('✅ Ключ восстановлен! Перезапустите.');
-                location.reload();
-            } else alert('❌ Неверный формат ключа (64 символа)');
-        }
-
-        document.getElementById('exportBtn').addEventListener('click', exportProfile);
-        document.getElementById('importBtn').addEventListener('click', () => {
-            document.getElementById('importFileInput').click();
-        });
-        document.getElementById('importFileInput').addEventListener('change', (e) => {
-            if(e.target.files[0]) importProfile(e.target.files[0]);
-        });
-        document.getElementById('resetBtn').addEventListener('click', resetProfile);
-        document.getElementById('subscribeBtn').addEventListener('click', () => alert('💎 Подписка 10₽/день\nОплата: СБП, карты, крипта'));
-        document.getElementById('copyKeyBtn').addEventListener('click', copyKey);
-        document.getElementById('restoreKeyBtn').addEventListener('click', restoreFromKey);
-
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function saveUserData() {
-            localStorage.setItem('happiness_app_user', JSON.stringify(userData));
-        }
-
-        window.editDream = editDream;
-        window.deleteDream = deleteDream;
-        window.renameAudio = renameAudio;
-        window.addPhotos = addPhotos;
-        window.deletePhoto = deletePhoto;
+        window.editDream=editDream; window.deleteDream=deleteDream; window.renameAudio=renameAudio; window.addPhotos=addPhotos; window.deletePhoto=deletePhoto;
+        window.addEventListener('mousemove',(e)=>addGlobalTrail(e.clientX,e.clientY));
+        window.addEventListener('touchmove',(e)=>{if(e.touches) addGlobalTrail(e.touches[0].clientX,e.touches[0].clientY);});
     </script>
 </body>
 </html>
