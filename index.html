@@ -241,7 +241,7 @@
             grid-template-columns: repeat(4,1fr);
             gap: 8px;
             margin-top: 15px;
-            max-height: 400px;
+            max-height: 300px;
             overflow-y: auto;
         }
         .photo-item { aspect-ratio: 1; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; }
@@ -253,14 +253,15 @@
 
         .video-container {
             width: 100%;
-            min-height: 350px;
-            max-height: 500px;
+            min-height: 450px;
+            max-height: 600px;
             aspect-ratio: 16 / 9;
             background: #000;
             border-radius: 20px;
             overflow: hidden;
             margin-bottom: 15px;
             border: 2px solid rgba(255,215,0,0.3);
+            resize: vertical;
         }
         .affirmation-video {
             width: 100%;
@@ -436,7 +437,6 @@
             color: rgba(255,255,255,0.6);
         }
         
-        /* Пузыри */
         .bubble {
             position: absolute;
             border-radius: 50%;
@@ -497,6 +497,18 @@
             50% { transform: scale(1.3); background: radial-gradient(circle at 30% 30%, #ffaa00, #ff6600); }
             100% { transform: scale(2); opacity: 0; }
         }
+        
+        .falling-digit {
+            position: absolute;
+            font-family: monospace;
+            font-weight: bold;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        @keyframes fall {
+            from { transform: translateY(-50px); }
+            to { transform: translateY(250px); }
+        }
     </style>
 </head>
 <body>
@@ -554,8 +566,8 @@
                 <div class="mode-btn" data-mode="video">🎬 Моё видео</div>
                 <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
             </div>
-            <div id="videoContainer" class="video-container">
-                <div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column; width: 100%; height: 100%;">
+            <div id="videoContainer" class="video-container" style="resize: vertical; overflow: auto;">
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 450px; flex-direction: column; width: 100%; height: 100%;">
                     <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Слайдшоу из ваших фото</p>
                     <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Добавьте фото в галерею</p>
                 </div>
@@ -822,7 +834,7 @@
             const now = Date.now();
             
             if(photos.length === 0) {
-                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 450px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
                 return;
             }
             
@@ -840,8 +852,8 @@
             }
             
             container.innerHTML = `
-                <div style="position: relative; width: 100%; min-height: 350px; background: #000;">
-                    <img src="${photo.data}" style="width: 100%; height: auto; min-height: 350px; object-fit: cover; opacity: 0.7;">
+                <div style="position: relative; width: 100%; min-height: 450px; background: #000;">
+                    <img src="${photo.data}" style="width: 100%; height: auto; min-height: 450px; object-fit: cover; opacity: 0.7;">
                     <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; background: rgba(0,0,0,0.3);">
                         <p style="color: #ffd700; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; max-width: 90%;">${escapeHtml(randomDream)}</p>
                     </div>
@@ -884,13 +896,13 @@
                     musicPlaying = false;
                 }
                 const container = document.getElementById('videoContainer');
-                if(!container.querySelector('video') && userData.videoFile) {
+                if(userData.videoFile && !container.querySelector('video')) {
                     container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${userData.videoFile}" loop autoplay style="width:100%"></video>`;
                     document.getElementById('videoControls').style.display = 'flex';
                     const video = document.getElementById('affirmationVideo');
                     setupVideoControls(video);
-                } else if(!userData.videoFile) {
-                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
+                } else if(!userData.videoFile && !container.querySelector('video')) {
+                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 450px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
                     document.getElementById('selectVideoBtnModal')?.addEventListener('click', handleSelectVideo);
                 }
             }
@@ -989,6 +1001,7 @@
                 document.getElementById('statDreams').textContent = userData.dreams.length; 
                 saveUserData(); 
                 renderDreamsList();
+                if(currentMode === 'slideshow') refreshSlideshow();
                 alert('✨ Мечта добавлена из аффирмации!');
             }
         }
@@ -1344,14 +1357,24 @@
                     if(btn.dataset.mode === 'video') btn.classList.add('active');
                     else btn.classList.remove('active');
                 });
-                setTimeout(() => switchMode('video'), 50);
+                setTimeout(() => {
+                    switchMode('video');
+                    // Принудительно показываем видео если оно есть
+                    const container = document.getElementById('videoContainer');
+                    if(container && !container.querySelector('video')) {
+                        container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${userData.videoFile}" loop autoplay style="width:100%"></video>`;
+                        document.getElementById('videoControls').style.display = 'flex';
+                        const video = document.getElementById('affirmationVideo');
+                        setupVideoControls(video);
+                    }
+                }, 100);
             } else {
                 currentMode = 'slideshow';
                 document.querySelectorAll('.mode-btn').forEach(btn => {
                     if(btn.dataset.mode === 'slideshow') btn.classList.add('active');
                     else btn.classList.remove('active');
                 });
-                setTimeout(() => switchMode('slideshow'), 50);
+                setTimeout(() => switchMode('slideshow'), 100);
             }
         }
         
@@ -1394,7 +1417,12 @@
         function escapeHtml(text){return text.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;'; if(m==='<')return'&lt;'; if(m==='>')return'&gt;'; return m;});}
 
         function addPhotos(event){
-            const files=Array.from(event.target.files); 
+            const files=Array.from(event.target.files);
+            // Ограничение на 22 фото
+            if(userData.photos.length + files.length > 22) {
+                alert('Максимум 22 фото в галерее');
+                return;
+            }
             files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos(); if(currentMode === 'slideshow') refreshSlideshow();}; reader.readAsDataURL(file);});
         }
         function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos(); if(currentMode === 'slideshow') refreshSlideshow();}
@@ -1421,7 +1449,19 @@
                         if(btn.dataset.mode === 'video') btn.classList.add('active');
                         else btn.classList.remove('active');
                     });
-                    switchMode('video');
+                    // Сразу показываем видео без переключения вкладок
+                    const container = document.getElementById('videoContainer');
+                    if(container) {
+                        container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${currentVideoURL}" loop autoplay style="width:100%"></video>`;
+                        document.getElementById('videoControls').style.display = 'flex';
+                        const video = document.getElementById('affirmationVideo');
+                        setupVideoControls(video);
+                    }
+                    stopSlideshow();
+                    if(slideshowMusic && musicPlaying) {
+                        slideshowMusic.pause();
+                        musicPlaying = false;
+                    }
                 }
             };
             input.click();
@@ -1474,157 +1514,131 @@
             if(log.children.length > 15) log.removeChild(log.lastChild);
         }
 
-       async function sendToSpace(){
-    if(userData.dreams.length===0){alert('Сначала добавь мечту'); return;}
-    playSpaceSound();
-    
-    const allDreamsText = userData.dreams.map(d => d.text).join(' | ');
-    const binaryCode = textToBinary(allDreamsText);
-    const spaceId = Date.now();
-    userData.spaceHistory.push({id:spaceId, date:new Date().toISOString(), dreamsText:allDreamsText, binaryCode:binaryCode, dreamCount:userData.dreams.length});
-    saveUserData();
-    
-    const spaceMessages = [
-        "🌌 МЕЧТЫ ПРЕВРАЩАЮТСЯ В БИТЫ",
-        "📡 СИГНАЛ ОТПРАВЛЕН В КОСМОС",
-        "✨ ДАННЫЕ УХОДЯТ В БЕСКОНЕЧНОСТЬ",
-        "🚀 ПЕРЕДАНО НА ЧАСТОТЕ 7.83 ГЦ",
-        "⭐ ОРБИТА ДОСТИГНУТА",
-        "📡 СПУТНИК NOAA-19 ПРИНЯЛ СИГНАЛ",
-        "💫 МЕЧТА ЗАПИСАНА В ХРОНИКИ ВСЕЛЕННОЙ"
-    ];
-    
-    const overlay = document.createElement('div'); 
-    overlay.className = 'space-overlay';
-    overlay.innerHTML = `<div style="color:#ffd700;font-size:22px;margin-bottom:20px;">✨ ОТПРАВКА В КОСМОС ✨</div>
-        <canvas id="spaceAnimCanvas" class="space-animation-canvas" width="300" height="300"></canvas>
-        <div class="binary-runner" id="binaryRunner"></div>
-        <div style="margin-top:20px;color:#00ffaa;text-align:center;" id="statusMessage">⚡ Преобразование...</div>`;
-    document.body.appendChild(overlay);
-    
-    // Анимация антенны (как было)
-    const animCanvas = document.getElementById('spaceAnimCanvas');
-    const animCtx = animCanvas.getContext('2d');
-    let frame = 0;
-    
-    function drawSpaceAnim(){
-        animCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        animCtx.fillRect(0,0,300,300);
-        
-        // Звёзды
-        for(let i=0;i<100;i++){
-            animCtx.fillStyle = `rgba(255,255,255,${Math.random()*0.8})`;
-            animCtx.fillRect(Math.random()*300, Math.random()*300, 1, 1);
-        }
-        
-        // Антенна
-        animCtx.beginPath();
-        animCtx.moveTo(150, 250);
-        animCtx.lineTo(150, 80);
-        animCtx.strokeStyle = '#ffd700';
-        animCtx.lineWidth = 2;
-        animCtx.stroke();
-        
-        // Волны
-        for(let i=0;i<5;i++){
-            const waveRadius = (frame * 3 + i * 40) % 120;
-            animCtx.beginPath();
-            animCtx.arc(150, 90, waveRadius + 15, 0, Math.PI * 2);
-            animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 120})`;
-            animCtx.lineWidth = 1.5;
-            animCtx.stroke();
-        }
-        
-        // Вращающиеся 0 и 1 вокруг антенны
-        for(let i=0;i<12;i++){
-            const angle = frame * 0.1 + i * Math.PI / 6;
-            const x = 150 + Math.cos(angle) * 40;
-            const y = 90 + Math.sin(angle) * 40;
-            const char = Math.random() > 0.5 ? '1' : '0';
-            animCtx.fillStyle = `hsl(${angle * 180 / Math.PI}, 100%, 60%)`;
-            animCtx.font = '12px monospace';
-            animCtx.fillText(char, x, y);
-        }
-        
-        frame++;
-        if(frame < 600) requestAnimationFrame(drawSpaceAnim);
-    }
-    drawSpaceAnim();
-    
-    // ========== МАТРИЧНЫЙ ДОЖДЬ ИЗ ЦИФР (ПАДАЮЩИЕ 0 И 1) ==========
-    const runnerDiv = document.getElementById('binaryRunner');
-    const statusDiv = document.getElementById('statusMessage');
-    runnerDiv.innerHTML = '';
-    runnerDiv.style.position = 'relative';
-    runnerDiv.style.overflow = 'hidden';
-    
-    const binaryDigits = binaryCode.replace(/ /g, '').split('');
-    const digits = binaryDigits.length > 0 ? binaryDigits : ['0','1','0','1','1','0','0','1'];
-    
-    // Создаём падающие цифры
-    for(let i = 0; i < 100; i++){
-        const digitSpan = document.createElement('div');
-        digitSpan.className = 'falling-digit';
-        const randomDigit = digits[Math.floor(Math.random() * digits.length)];
-        digitSpan.textContent = randomDigit;
-        digitSpan.style.position = 'absolute';
-        digitSpan.style.left = Math.random() * 100 + '%';
-        digitSpan.style.top = Math.random() * -100 + 'px';
-        digitSpan.style.fontFamily = 'monospace';
-        digitSpan.style.fontSize = (12 + Math.random() * 8) + 'px';
-        digitSpan.style.fontWeight = 'bold';
-        digitSpan.style.opacity = 0.3 + Math.random() * 0.7;
-        digitSpan.style.color = `hsl(${Math.random() * 60 + 100}, 100%, 50%)`;
-        digitSpan.style.pointerEvents = 'none';
-        digitSpan.style.whiteSpace = 'nowrap';
-        digitSpan.style.animation = `fall ${0.5 + Math.random() * 1.5}s linear infinite`;
-        digitSpan.style.animationDelay = Math.random() * 5 + 's';
-        runnerDiv.appendChild(digitSpan);
-    }
-    
-    // Добавляем стиль анимации если ещё нет
-    if(!document.getElementById('fall-style')){
-        const style = document.createElement('style');
-        style.id = 'fall-style';
-        style.textContent = `
-            @keyframes fall {
-                from { transform: translateY(-50px); }
-                to { transform: translateY(250px); }
+        async function sendToSpace(){
+            if(userData.dreams.length===0){alert('Сначала добавь мечту'); return;}
+            playSpaceSound();
+            
+            const allDreamsText = userData.dreams.map(d => d.text).join(' | ');
+            const binaryCode = textToBinary(allDreamsText);
+            const spaceId = Date.now();
+            userData.spaceHistory.push({id:spaceId, date:new Date().toISOString(), dreamsText:allDreamsText, binaryCode:binaryCode, dreamCount:userData.dreams.length});
+            saveUserData();
+            
+            const spaceMessages = [
+                "🌌 МЕЧТЫ ПРЕВРАЩАЮТСЯ В БИТЫ",
+                "📡 СИГНАЛ ОТПРАВЛЕН В КОСМОС",
+                "✨ ДАННЫЕ УХОДЯТ В БЕСКОНЕЧНОСТЬ",
+                "🚀 ПЕРЕДАНО НА ЧАСТОТЕ 7.83 ГЦ",
+                "⭐ ОРБИТА ДОСТИГНУТА",
+                "📡 СПУТНИК NOAA-19 ПРИНЯЛ СИГНАЛ",
+                "💫 МЕЧТА ЗАПИСАНА В ХРОНИКИ ВСЕЛЕННОЙ"
+            ];
+            
+            const overlay = document.createElement('div'); 
+            overlay.className = 'space-overlay';
+            overlay.innerHTML = `<div style="color:#ffd700;font-size:22px;margin-bottom:20px;">✨ ОТПРАВКА В КОСМОС ✨</div>
+                <canvas id="spaceAnimCanvas" class="space-animation-canvas" width="300" height="300"></canvas>
+                <div class="binary-runner" id="binaryRunner"></div>
+                <div style="margin-top:20px;color:#00ffaa;text-align:center;" id="statusMessage">⚡ Преобразование...</div>`;
+            document.body.appendChild(overlay);
+            
+            // АНИМАЦИЯ АНТЕННЫ
+            const animCanvas = document.getElementById('spaceAnimCanvas');
+            const animCtx = animCanvas.getContext('2d');
+            let frame = 0;
+            
+            function drawSpaceAnim(){
+                animCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                animCtx.fillRect(0,0,300,300);
+                
+                // Звёзды
+                for(let i=0;i<100;i++){
+                    animCtx.fillStyle = `rgba(255,255,255,${Math.random()*0.8})`;
+                    animCtx.fillRect(Math.random()*300, Math.random()*300, 1, 1);
+                }
+                
+                // Антенна
+                animCtx.beginPath();
+                animCtx.moveTo(150, 250);
+                animCtx.lineTo(150, 80);
+                animCtx.strokeStyle = '#ffd700';
+                animCtx.lineWidth = 2;
+                animCtx.stroke();
+                
+                // Волны
+                for(let i=0;i<5;i++){
+                    const waveRadius = (frame * 3 + i * 40) % 120;
+                    animCtx.beginPath();
+                    animCtx.arc(150, 90, waveRadius + 15, 0, Math.PI * 2);
+                    animCtx.strokeStyle = `rgba(0,255,255,${0.6 - waveRadius / 120})`;
+                    animCtx.lineWidth = 1.5;
+                    animCtx.stroke();
+                }
+                
+                // Вращающиеся 0 и 1 вокруг антенны
+                for(let i=0;i<12;i++){
+                    const angle = frame * 0.1 + i * Math.PI / 6;
+                    const x = 150 + Math.cos(angle) * 40;
+                    const y = 90 + Math.sin(angle) * 40;
+                    const char = Math.random() > 0.5 ? '1' : '0';
+                    animCtx.fillStyle = `hsl(${angle * 180 / Math.PI}, 100%, 60%)`;
+                    animCtx.font = '12px monospace';
+                    animCtx.fillText(char, x, y);
+                }
+                
+                frame++;
+                if(frame < 600) requestAnimationFrame(drawSpaceAnim);
             }
-            .falling-digit {
-                position: absolute;
-                font-family: monospace;
-                font-weight: bold;
-                pointer-events: none;
-                white-space: nowrap;
+            drawSpaceAnim();
+            
+            // МАТРИЧНЫЙ ДОЖДЬ
+            const runnerDiv = document.getElementById('binaryRunner');
+            const statusDiv = document.getElementById('statusMessage');
+            runnerDiv.innerHTML = '';
+            runnerDiv.style.position = 'relative';
+            runnerDiv.style.overflow = 'hidden';
+            
+            const binaryDigits = binaryCode.replace(/ /g, '').split('');
+            const digits = binaryDigits.length > 0 ? binaryDigits : ['0','1','0','1','1','0','0','1'];
+            
+            for(let i = 0; i < 100; i++){
+                const digitSpan = document.createElement('div');
+                digitSpan.className = 'falling-digit';
+                const randomDigit = digits[Math.floor(Math.random() * digits.length)];
+                digitSpan.textContent = randomDigit;
+                digitSpan.style.left = Math.random() * 100 + '%';
+                digitSpan.style.top = Math.random() * -100 + 'px';
+                digitSpan.style.fontSize = (12 + Math.random() * 8) + 'px';
+                digitSpan.style.opacity = 0.3 + Math.random() * 0.7;
+                digitSpan.style.color = `hsl(${Math.random() * 60 + 100}, 100%, 50%)`;
+                digitSpan.style.animation = `fall ${0.5 + Math.random() * 1.5}s linear infinite`;
+                digitSpan.style.animationDelay = Math.random() * 5 + 's';
+                runnerDiv.appendChild(digitSpan);
             }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    let msgIdx = 0;
-    function showMsgs(){
-        if(msgIdx < spaceMessages.length){
-            statusDiv.innerHTML = spaceMessages[msgIdx];
-            msgIdx++;
-            setTimeout(showMsgs, 600);
-        } else {
-            setTimeout(()=>{
-                overlay.remove();
-                userData.sentToSpace++;
-                document.getElementById('statSent').textContent = userData.sentToSpace;
-                saveUserData();
-                renderHistoryList();
-                const time = new Date().toLocaleTimeString('ru');
-                const randomMsg = spaceMessages[Math.floor(Math.random() * spaceMessages.length)];
-                addSpaceLog(`🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос! ${randomMsg}`);
-                if(navigator.vibrate) navigator.vibrate(200);
-                alert('🌠 Мечты отправлены в космос!\n✨ Ожидайте исполнения ✨');
-            }, 800);
+            
+            let msgIdx = 0;
+            function showMsgs(){
+                if(msgIdx < spaceMessages.length){
+                    statusDiv.innerHTML = spaceMessages[msgIdx];
+                    msgIdx++;
+                    setTimeout(showMsgs, 600);
+                } else {
+                    setTimeout(()=>{
+                        overlay.remove();
+                        userData.sentToSpace++;
+                        document.getElementById('statSent').textContent = userData.sentToSpace;
+                        saveUserData();
+                        renderHistoryList();
+                        const time = new Date().toLocaleTimeString('ru');
+                        const randomMsg = spaceMessages[Math.floor(Math.random() * spaceMessages.length)];
+                        addSpaceLog(`🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос! ${randomMsg}`);
+                        if(navigator.vibrate) navigator.vibrate(200);
+                        alert('🌠 Мечты отправлены в космос!\n✨ Ожидайте исполнения ✨');
+                    }, 800);
+                }
+            }
+            showMsgs();
         }
-    }
-    showMsgs();
-}
 
         document.getElementById('sendToSpaceBtn')?.addEventListener('click', sendToSpace);
 
