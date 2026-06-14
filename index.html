@@ -283,9 +283,42 @@
         .stat-value { font-size: 24px; font-weight: bold; color: #ffd700; }
         .stat-label { font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 5px; }
 
-        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; max-height: 300px; overflow-y: auto; }
-        .photo-item { aspect-ratio: 1; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; cursor: pointer; }
-        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .photo-item {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-item .delete-photo {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            color: #ff6b9d;
+        }
         .add-photo {
             display: flex;
             align-items: center;
@@ -293,6 +326,7 @@
             font-size: 40px;
             cursor: pointer;
             border: 2px dashed rgba(255, 215, 0, 0.3);
+            background: rgba(255,255,255,0.05);
         }
         .hidden { display: none !important; }
         .progress-text { text-align: center; margin-top: 10px; color: #ffd700; font-size: 14px; }
@@ -421,13 +455,30 @@
             cursor: pointer;
             margin-left: 10px;
         }
+        
+        .delete-photo {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            color: #ff6b9d;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
 
     <canvas id="magicCanvas"></canvas>
 
-    <!-- Экран 1: Свайп -->
+    <!-- Экран 1: Свайп (замедленный) -->
     <div id="screen-swipe" class="screen active">
         <h1>✨ Пробуждение ✨</h1>
         <div class="card">
@@ -508,7 +559,7 @@
                 <textarea id="dreamText" rows="3" placeholder="Опиши мечту..."></textarea>
                 <button class="btn" id="addDreamBtn">➕ Добавить мечту</button>
                 <div class="dreams-list" id="dreamsList"></div>
-                <h2>🖼️ Галерея (<span id="photoCount">0</span>/20)</h2>
+                <h2>🖼️ Галерея (<span id="photoCount">0</span>)</h2>
                 <div class="photo-grid" id="photoGrid"></div>
             </div>
         </div>
@@ -593,8 +644,8 @@
             constructor() {
                 this.x = Math.random() * canvasWidth;
                 this.y = Math.random() * canvasHeight;
-                this.vx = (Math.random() - 0.5) * 0.8;
-                this.vy = (Math.random() - 0.5) * 0.8;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
                 this.size = Math.random() * 3 + 1;
                 this.color = ['#ffd700', '#ff6b9d', '#c06fff', '#00ffff'][Math.floor(Math.random() * 4)];
                 this.alpha = Math.random() * 0.6 + 0.2;
@@ -621,17 +672,17 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 1.5;
-                this.vy = (Math.random() - 0.5) * 1.5 - 1;
+                this.vx = (Math.random() - 0.5) * 1.2;
+                this.vy = (Math.random() - 0.5) * 1.2 - 0.5;
                 this.life = 1.0;
-                this.size = Math.random() * 12 + 6;
+                this.size = Math.random() * 10 + 5;
                 this.color = `hsl(${Math.random() * 60 + 40}, 100%, 60%)`;
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.life -= 0.02;
-                this.size *= 0.97;
+                this.life -= 0.015;
+                this.size *= 0.98;
             }
             draw() {
                 ctx.beginPath();
@@ -648,7 +699,7 @@
 
         function initBgParticles() {
             bgParticles = [];
-            for(let i = 0; i < 40; i++) bgParticles.push(new BgParticle());
+            for(let i = 0; i < 50; i++) bgParticles.push(new BgParticle());
         }
 
         function animateCanvas() {
@@ -714,7 +765,6 @@
 
         // ДАННЫЕ
         let entropyData = [];
-        let isCompleted = false;
         let swipeCompleted = false;
         let mediaRecorder = null;
         let audioChunks = [];
@@ -750,14 +800,14 @@
             });
         });
 
-        // СВАЙП
+        // СВАЙП (ЗАМЕДЛЕННЫЙ - 200 точек)
         const swipeArea = document.getElementById('swipeArea');
         const entropyFill = document.getElementById('entropyFill');
         const entropyText = document.getElementById('entropyText');
         const btnToProfile2 = document.getElementById('btnToProfile');
         
         let pointsCollected = 0;
-        const requiredPoints = 120;
+        const requiredPoints = 200; // Медленнее - 200 точек
 
         function handleSwipeStart(e) {
             if(swipeCompleted) return;
@@ -772,14 +822,15 @@
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
+            // Шлейф
             for(let i = 0; i < 3; i++) {
-                trailParticles.push(new TrailParticle(clientX + (Math.random() - 0.5) * 20, clientY + (Math.random() - 0.5) * 20));
+                trailParticles.push(new TrailParticle(clientX + (Math.random() - 0.5) * 25, clientY + (Math.random() - 0.5) * 25));
             }
             
             entropyData.push({ x: clientX, y: clientY, time: Date.now() });
             pointsCollected++;
             
-            if(pointsCollected % 8 === 0) playSwipeSound();
+            if(pointsCollected % 12 === 0) playSwipeSound();
             
             const percent = Math.min(100, Math.floor((pointsCollected / requiredPoints) * 100));
             entropyFill.style.width = percent + '%';
@@ -1009,12 +1060,9 @@
             `).join('');
         }
 
+        // ФОТО - БЕЗ ОГРАНИЧЕНИЙ
         function addPhotos(event) {
             const files = Array.from(event.target.files);
-            if(userData.photos.length + files.length > 20) {
-                alert('Максимум 20 фото');
-                return;
-            }
             files.forEach(file => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -1026,11 +1074,22 @@
             });
         }
 
+        function deletePhoto(index) {
+            userData.photos.splice(index, 1);
+            saveUserData();
+            renderPhotos();
+        }
+
         function renderPhotos() {
             const grid = document.getElementById('photoGrid');
             if(!grid) return;
             document.getElementById('photoCount').textContent = userData.photos.length;
-            const photosHtml = userData.photos.map(p => `<div class="photo-item"><img src="${p.data}"></div>`).join('');
+            const photosHtml = userData.photos.map((p, idx) => `
+                <div class="photo-item">
+                    <div class="delete-photo" onclick="deletePhoto(${idx})">✖</div>
+                    <img src="${p.data}">
+                </div>
+            `).join('');
             grid.innerHTML = photosHtml + `<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)"></label>`;
         }
 
@@ -1096,7 +1155,7 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;">
                         <span style="color:#ffd700;">🚀 #${h.id}</span>
                         <span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span>
-                        <button class="view-binary-btn" onclick="showBinaryCode(${h.id})">📟 Бинарный код</button>
+                        <button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Бинарный код</button>
                     </div>
                     <div style="margin-top:5px; font-size:12px;">${h.dreamsText.substring(0, 100)}${h.dreamsText.length > 100 ? '...' : ''}</div>
                     <div id="binary-${h.id}" style="display:none;" class="history-binary"></div>
@@ -1114,6 +1173,16 @@
                 } else {
                     div.style.display = 'none';
                 }
+            }
+        }
+
+        function updateSpaceLogAndHistory() {
+            renderHistoryList();
+            const log = document.getElementById('spaceLog');
+            const time = new Date().toLocaleTimeString('ru');
+            log.innerHTML = `🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос!<br>` + log.innerHTML;
+            if(log.innerHTML.split('<br>').length > 10) {
+                log.innerHTML = log.innerHTML.split('<br>').slice(0, 10).join('<br>');
             }
         }
 
@@ -1157,7 +1226,7 @@
                     if(running.length > 80) running = running.substring(0,80);
                     runnerDiv.innerHTML = `<div class="binary-line">${running}</div><div class="binary-line" style="color:#ff6b9d;">${binaryArray[index]} →</div>`;
                     index++;
-                    setTimeout(animateBinary, 20);
+                    setTimeout(animateBinary, 15);
                 } else {
                     let msgIndex = 0;
                     function showMessages() {
@@ -1171,10 +1240,7 @@
                                 userData.sentToSpace++;
                                 document.getElementById('statSent').textContent = userData.sentToSpace;
                                 saveUserData();
-                                renderHistoryList();
-                                const log = document.getElementById('spaceLog');
-                                const time = new Date().toLocaleTimeString('ru');
-                                log.innerHTML = `🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос!<br>` + log.innerHTML;
+                                updateSpaceLogAndHistory();
                                 if(navigator.vibrate) navigator.vibrate(200);
                                 alert('🌠 Мечты отправлены в космос!\n📡 Ожидайте исполнения в течение 28 дней');
                             }, 1000);
@@ -1272,6 +1338,7 @@
         window.deleteDream = deleteDream;
         window.renameAudio = renameAudio;
         window.addPhotos = addPhotos;
+        window.deletePhoto = deletePhoto;
     </script>
 </body>
 </html>
