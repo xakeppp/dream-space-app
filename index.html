@@ -5,6 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🌠 Космическая мечта — частота счастья</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили */
+        .mode-line {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: nowrap;
+        }
+        .mode-line .mode-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 5px;
+        }
+        .mode-line .select-video-btn {
+            flex: 0 0 auto;
+            padding: 10px 15px;
+            white-space: nowrap;
+        }
+        .dynamic-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #ffd700;
+            border-radius: 30px;
+            padding: 12px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ffd700;
+            width: 100%;
+        }
+        .dynamic-btn:active { transform: scale(0.97); background: rgba(255,215,0,0.2); }
+        .video-container {
+            min-height: 350px;
+            aspect-ratio: 16 / 9;
+        }
+        .video-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(0,0,0,0.7);
+            flex-wrap: wrap;
+        }
+        .slide-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            text-align: center;
+        }
+        .slide-text {
+            color: #ffd700;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+        .full-text-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .full-text-content {
+            background: rgba(30,30,50,0.95);
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            border: 2px solid #ffd700;
+        }
+        .full-text-content p {
+            color: #ffd700;
+            font-size: 16px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .close-modal-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #ff6b9d;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .history-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        .history-item .full-text-btn {
+            background: rgba(255,215,0,0.2);
+            border: 1px solid #ffd700;
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 10px;
+            color: #ffd700;
+        }
+        .space-log-message {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
 
@@ -57,12 +187,12 @@
         
         <div class="card">
             <div class="mode-line">
-                <div class="mode-btn active" data-mode="slideshow">🎞️ Слайдшоу</div>
+                <div class="mode-btn" data-mode="slideshow">🎞️ Слайдшоу</div>
                 <div class="mode-btn" data-mode="video">🎬 Моё видео</div>
                 <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
             </div>
             <div id="videoContainer" class="video-container">
-                <div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;">
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column; width: 100%; height: 100%;">
                     <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Слайдшоу из ваших фото</p>
                     <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Добавьте фото в галерею</p>
                 </div>
@@ -307,7 +437,7 @@
             const now = Date.now();
             
             if(photos.length === 0) {
-                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
                 return;
             }
             
@@ -398,7 +528,7 @@
             const photos = userData.photos || [];
             
             if(photos.length === 0) {
-                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
                 return;
             }
             
@@ -437,7 +567,7 @@
                     playVideo(userData.videoFile);
                 } else {
                     const container = document.getElementById('videoContainer');
-                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
+                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 350px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
                     document.getElementById('selectVideoBtnModal')?.addEventListener('click', handleSelectVideo);
                     document.getElementById('videoControls').style.display = 'none';
                 }
@@ -453,16 +583,14 @@
             "Я достоин всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю силу и уверенность 💪",
             "Деньги текут ко мне легко 💰", "Я здоров и полон энергии ⚡", "Я в безопасности и любим 🌈",
             "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Я достигаю всех целей 🎯",
-            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖",
-            "Моя жизнь наполнена смыслом 🕯️", "Я привлекаю правильных людей 👥", "Мой внутренний свет сияет 🔥"
+            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖"
         ];
         
         const affirmationsFemale = [
             "Я достойна всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю любовь и свет 💖",
             "Деньги текут ко мне легко 💰", "Я здорова и полна энергии ⚡", "Я в безопасности и любима 🌈",
             "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Я достигаю всех целей 🎯",
-            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖",
-            "Моя жизнь наполнена смыслом 🕯️", "Я привлекаю правильных людей 👥", "Мой внутренний свет сияет 🔥"
+            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖"
         ];
 
         let currentAffirmationInterval = null;
@@ -518,7 +646,9 @@
                 showMainScreen(); 
                 startAffirmationCarousel();
                 slideshowActive = true;
-                startSlideshow();
+                setTimeout(() => {
+                    if(currentMode === 'slideshow') playSlideshowMode();
+                }, 100);
             }
             document.querySelectorAll('.gender-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentGender=btn.dataset.gender; updateAffirmationCarousel();});});
             document.getElementById('skipVoiceBtn')?.addEventListener('click',()=>{
@@ -527,7 +657,9 @@
                 showMainScreen();
                 startAffirmationCarousel();
                 slideshowActive = true;
-                startSlideshow();
+                setTimeout(() => {
+                    if(currentMode === 'slideshow') playSlideshowMode();
+                }, 100);
             });
             document.getElementById('addRandomDreamBtn')?.addEventListener('click', addRandomDream);
             document.getElementById('dynamicDreamBtn')?.addEventListener('click', addRandomDream);
@@ -631,7 +763,9 @@
             showMainScreen(); 
             startAffirmationCarousel();
             slideshowActive = true;
-            startSlideshow();
+            setTimeout(() => {
+                if(currentMode === 'slideshow') playSlideshowMode();
+            }, 100);
         });
 
         function showMainScreen(){
@@ -650,20 +784,21 @@
             renderHistoryList(); 
             initTabs();
             
+            // Устанавливаем активный режим
             if(userData.videoFile) {
                 currentMode = 'video';
                 document.querySelectorAll('.mode-btn').forEach(btn => {
                     if(btn.dataset.mode === 'video') btn.classList.add('active');
                     else btn.classList.remove('active');
                 });
-                switchMode('video');
+                setTimeout(() => switchMode('video'), 50);
             } else {
                 currentMode = 'slideshow';
                 document.querySelectorAll('.mode-btn').forEach(btn => {
                     if(btn.dataset.mode === 'slideshow') btn.classList.add('active');
                     else btn.classList.remove('active');
                 });
-                switchMode('slideshow');
+                setTimeout(() => switchMode('slideshow'), 50);
             }
         }
         
@@ -758,7 +893,21 @@
             const container=document.getElementById('historyList'); 
             if(!container)return; 
             if(!userData.spaceHistory||userData.spaceHistory.length===0){container.innerHTML='<p style="color:rgba(255,255,255,0.5);text-align:center;">История пуста. Отправьте мечту в космос 🚀</p>'; return;}
-            container.innerHTML=userData.spaceHistory.slice().reverse().map(h=>`<div class="history-item"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;"><span style="color:#ffd700;">🚀 #${h.id}</span><span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span><div><button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Код</button><button class="view-full-text-btn" onclick="showFullText('${escapeHtml(h.dreamsText).replace(/'/g, "\\'")}')">📄 Полный текст</button></div></div><div style="margin-top:5px; font-size:12px; word-break:break-word;">${escapeHtml(h.dreamsText.substring(0,100))}${h.dreamsText.length>100?'...':''}</div><div id="binary-${h.id}" style="display:none;" class="history-binary"></div></div>`).join('');
+            container.innerHTML = userData.spaceHistory.slice().reverse().map((h, idx) => {
+                const shortText = h.dreamsText.length > 100 ? h.dreamsText.substring(0, 100) + '...' : h.dreamsText;
+                return `<div class="history-item">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                        <span style="color:#ffd700;">🚀 #${h.id}</span>
+                        <span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span>
+                        <div>
+                            <button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Код</button>
+                            <button class="full-text-btn" onclick="showFullText('${escapeHtml(h.dreamsText).replace(/'/g, "\\'")}')">📄 Полный текст</button>
+                        </div>
+                    </div>
+                    <div style="margin-top:5px; font-size:12px; word-break:break-word;">${escapeHtml(shortText)}</div>
+                    <div id="binary-${h.id}" style="display:none;" class="history-binary"></div>
+                </div>`;
+            }).join('');
         }
         window.showBinaryCode=function(id){const history=userData.spaceHistory.find(h=>h.id===id); if(history){const div=document.getElementById(`binary-${id}`); if(div.style.display==='none'){div.innerHTML=`<strong>Бинарный код:</strong><br>${history.binaryCode}`; div.style.display='block';}else{div.style.display='none';}}};
         window.showFullText = showFullText;
@@ -872,11 +1021,6 @@
         window.editDream=editDream; window.deleteDream=deleteDream; window.renameAudio=renameAudio; window.deleteAudio=deleteAudio; window.addPhotos=addPhotos; window.deletePhoto=deletePhoto;
         window.addEventListener('mousemove',(e)=>addGlobalTrail(e.clientX,e.clientY));
         window.addEventListener('touchmove',(e)=>{if(e.touches) addGlobalTrail(e.touches[0].clientX,e.touches[0].clientY);});
-        
-        // Установка начального режима слайдшоу при загрузке
-        setTimeout(() => {
-            if(currentMode === 'slideshow') playSlideshowMode();
-        }, 100);
     </script>
 </body>
 </html>
