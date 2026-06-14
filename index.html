@@ -4,7 +4,419 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🌠 Космическая мечта — частота счастья</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        #magicCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .screen.active { display: block; }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffd700, #ff6b9d, #c06fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        #swipeArea {
+            width: 100%;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            touch-action: none;
+            cursor: crosshair;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        #swipeArea.swiping {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 40px rgba(255,215,0,0.4);
+        }
+
+        #swipeArea.completed {
+            border-color: #00ffaa;
+            background: rgba(0,255,170,0.1);
+        }
+
+        .swipe-text {
+            font-size: 18px;
+            color: #ffd700;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .entropy-bar {
+            width: 80%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .entropy-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b9d, #ffd700, #c06fff);
+            transition: width 0.05s linear;
+            border-radius: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06fff 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 215, 0, 0.5); }
+
+        .gender-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .gender-btn {
+            flex: 1;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 20px;
+            text-align: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .gender-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ff6b9d);
+            border-color: #ffd700;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .record-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .record-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%);
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .record-btn.recording {
+            animation: pulse 1s infinite;
+            box-shadow: 0 0 20px rgba(255,71,87,0.8);
+        }
+        .stop-btn { background: #333; font-size: 30px; }
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .record-status { text-align: center; font-size: 14px; margin: 10px 0; color: #ffd700; }
+        .recording-dot { display: inline-block; width: 10px; height: 10px; background: red; border-radius: 50%; animation: blink 1s infinite; margin-right: 5px; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .audio-list, .dreams-list, .history-list { margin-top: 20px; max-height: 300px; overflow-y: auto; }
+        .audio-item, .dream-item, .history-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; }
+        .audio-name { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
+        .audio-name span { cursor: pointer; font-size: 14px; color: #ffd700; }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,14,39,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,215,0,0.3);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+        }
+        .tab-item.active { color: #ffd700; }
+        .tab-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #ffd700; }
+        .stat-label { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 5px; }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 8px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .photo-item { aspect-ratio: 1; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .delete-photo { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; color: #ff6b9d; z-index: 2; }
+        .add-photo { display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; border: 2px dashed rgba(255,215,0,0.3); background: rgba(255,255,255,0.05); }
+        .hidden { display: none !important; }
+        .progress-text { text-align: center; margin-top: 10px; color: #ffd700; font-size: 14px; }
+
+        .video-container {
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255,215,0,0.3);
+            position: relative;
+            background: #000;
+            min-height: 250px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            max-width: 100%;
+        }
+        .affirmation-video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #000;
+            object-fit: cover;
+        }
+        .video-controls { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(0,0,0,0.7); flex-wrap: wrap; }
+        .volume-slider { flex: 1; height: 4px; -webkit-appearance: none; background: rgba(255,255,255,0.3); border-radius: 5px; }
+        .volume-slider::-webkit-slider-thumb { width: 16px; height: 16px; border-radius: 50%; background: #ffd700; cursor: pointer; -webkit-appearance: none; }
+        .mute-btn, .play-pause-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #ffd700; margin: 0 5px; }
+        .select-video-btn { background: rgba(255,255,255,0.1); border: 1px dashed #ffd700; padding: 8px 15px; border-radius: 30px; font-size: 12px; cursor: pointer; width: auto; margin-top: 0; }
+
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 30px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ff6b9d);
+            border-color: #ffd700;
+        }
+
+        .space-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .binary-runner {
+            font-family: monospace;
+            font-size: 12px;
+            color: #00ffaa;
+            background: #000;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ffd700;
+        }
+        .binary-line { font-family: monospace; font-size: 11px; line-height: 1.3; margin: 2px 0; }
+        .space-animation-canvas { width: 300px; height: 300px; margin-bottom: 20px; }
+
+        .affirmation-carousel { min-height: 80px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-top: 10px; text-align: center; font-size: 16px; line-height: 1.4; }
+        
+        .double-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .double-buttons .btn { margin-top: 0; flex: 1; }
+
+        .key-copy { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .key-copy p { flex: 1; font-family: monospace; font-size: 11px; word-break: break-all; color: #ffd700; }
+        .copy-btn { background: rgba(255,215,0,0.2); border: 1px solid #ffd700; border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; color: #ffd700; }
+        .paste-area { margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .paste-area input { flex: 1; margin: 0; padding: 8px; font-size: 11px; }
+        .paste-area button { margin: 0; padding: 8px 12px; width: auto; }
+        
+        .history-binary { font-family: monospace; font-size: 10px; color: #00ffaa; margin-top: 8px; word-break: break-all; max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; }
+        .view-binary-btn { background: rgba(0,255,170,0.2); border: 1px solid #00ffaa; border-radius: 15px; padding: 4px 12px; font-size: 11px; cursor: pointer; margin-left: 10px; }
+        .view-full-text-btn { background: rgba(255,215,0,0.2); border: 1px solid #ffd700; border-radius: 15px; padding: 4px 12px; font-size: 11px; cursor: pointer; margin-left: 10px; }
+        
+        .skip-hint { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 15px; cursor: pointer; }
+        .skip-hint:hover { color: #ffd700; }
+        
+        .space-log-message { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 12px; }
+        
+        .slide-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            text-align: center;
+        }
+        .slide-text {
+            color: #ffd700;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+            margin-bottom: 5px;
+        }
+        .voice-indicator {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .full-text-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .full-text-content {
+            background: rgba(30,30,50,0.95);
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            border: 2px solid #ffd700;
+        }
+        .full-text-content p {
+            color: #ffd700;
+            font-size: 16px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .close-modal-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #ff6b9d;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
@@ -58,17 +470,14 @@
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                 <h2 style="margin-bottom: 0;">🎬 Видео-аффирмация</h2>
-                <div style="display: flex; gap: 8px;">
-                    <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
-                    <button class="refresh-slideshow-btn" id="refreshSlideshowBtn">🔄 Обновить</button>
-                </div>
+                <button class="select-video-btn" id="selectVideoBtn">📁 Выбрать MP4</button>
             </div>
             <div class="mode-switch">
                 <div class="mode-btn active" data-mode="slideshow">🎞️ Слайдшоу</div>
                 <div class="mode-btn" data-mode="video">🎬 Моё видео</div>
             </div>
-            <div id="videoContainer" class="video-container" style="position: relative;">
-                <div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;">
+            <div id="videoContainer" class="video-container">
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;">
                     <p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Слайдшоу из ваших фото</p>
                     <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Добавьте фото в галерею</p>
                 </div>
@@ -263,6 +672,7 @@
         let slideshowMusic = null;
         let isPaused = false;
         let currentMode = 'slideshow';
+        let currentVideo = null;
         
         function startSlideshow() {
             if(slideshowInterval) clearInterval(slideshowInterval);
@@ -271,13 +681,11 @@
             slideshowInterval = setInterval(updateSlide, 500);
             
             slideshowMusic = document.getElementById('slideshowMusic');
-            if(slideshowMusic && !musicPlaying && !document.querySelector('#affirmationVideo') && currentMode === 'slideshow') {
+            if(slideshowMusic && !musicPlaying && currentMode === 'slideshow') {
                 slideshowMusic.volume = 0.5;
                 slideshowMusic.loop = true;
                 slideshowMusic.play().catch(e=>console.log('music play blocked'));
                 musicPlaying = true;
-                document.getElementById('volumeSlider').value = 0.5;
-                document.getElementById('volumePercent').textContent = '50%';
             }
         }
         
@@ -286,32 +694,15 @@
                 clearInterval(slideshowInterval);
                 slideshowInterval = null;
             }
-        }
-        
-        function pauseSlideshow() {
-            isPaused = true;
-            stopSlideshow();
-            if(slideshowMusic && musicPlaying) {
+            if(slideshowMusic && musicPlaying && currentMode !== 'video') {
                 slideshowMusic.pause();
                 musicPlaying = false;
-            }
-        }
-        
-        function resumeSlideshow() {
-            isPaused = false;
-            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) {
-                startSlideshow();
-                if(slideshowMusic && !musicPlaying) {
-                    slideshowMusic.play().catch(e=>console.log('music play blocked'));
-                    musicPlaying = true;
-                }
             }
         }
         
         function updateSlide() {
             const container = document.getElementById('videoContainer');
             if(!container) return;
-            if(container.querySelector('video')) return;
             if(currentMode !== 'slideshow') return;
             
             const photos = userData.photos || [];
@@ -319,74 +710,53 @@
             const audios = userData.audios || [];
             
             if(photos.length === 0) {
-                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
                 return;
             }
             
             currentSlideIndex = (currentSlideIndex + 1) % photos.length;
             const photo = photos[currentSlideIndex];
-            const dream = dreams.length > 0 ? dreams[Math.floor(Math.random() * dreams.length)].text : "Твоя мечта здесь... ✨";
-            const voiceText = audios.length > 0 ? "🎤 Есть голосовая запись" : "";
+            const randomDream = dreams.length > 0 ? dreams[Math.floor(Math.random() * dreams.length)].text : "Твоя мечта здесь... ✨";
+            
+            // Запускаем случайную голосовую запись
+            if(audios.length > 0 && currentMode === 'slideshow') {
+                const randomAudio = audios[Math.floor(Math.random() * audios.length)];
+                const tempAudio = new Audio(randomAudio.data);
+                tempAudio.volume = 0.3;
+                tempAudio.play().catch(e=>console.log('voice play blocked'));
+            }
             
             container.innerHTML = `
-                <div style="position: relative; width: 100%; min-height: 250px; background: #000;">
-                    <img src="${photo.data}" style="width: 100%; height: auto; min-height: 250px; object-fit: cover; opacity: 0.7;">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; background: rgba(0,0,0,0.3);">
-                        <p style="color: #ffd700; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; max-width: 90%;">${escapeHtml(dream)}<br><span style="font-size: 12px; color: rgba(255,255,255,0.5);">${voiceText}</span></p>
+                <div class="slide-content">
+                    <img src="${photo.data}" class="slide-image">
+                    <div class="slide-overlay">
+                        <div class="slide-text">${escapeHtml(randomDream)}</div>
+                        <div class="voice-indicator">${audios.length > 0 ? "🎤 Голос мечты звучит..." : ""}</div>
                     </div>
                 </div>
             `;
         }
         
-        function refreshSlideshow() {
-            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) {
-                updateSlide();
-            }
-        }
-
-        // Переключение режимов
-        function switchMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                if(btn.dataset.mode === mode) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            
-            if(mode === 'slideshow') {
-                const container = document.getElementById('videoContainer');
-                if(container.querySelector('video')) {
-                    const video = container.querySelector('video');
-                    if(video) video.pause();
-                    container.innerHTML = '';
-                    slideshowActive = true;
-                    startSlideshow();
-                } else if(slideshowActive) {
-                    startSlideshow();
-                }
-                if(slideshowMusic && !musicPlaying) {
-                    slideshowMusic.play().catch(e=>console.log('music play blocked'));
-                    musicPlaying = true;
-                }
-            } else if(mode === 'video') {
-                stopSlideshow();
-                if(slideshowMusic && musicPlaying) {
-                    slideshowMusic.pause();
-                    musicPlaying = false;
-                }
-                const container = document.getElementById('videoContainer');
-                if(!container.querySelector('video') && userData.videoFile) {
-                    container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${userData.videoFile}" loop autoplay style="width:100%"></video>`;
-                    document.getElementById('videoControls').style.display = 'flex';
-                    const video = document.getElementById('affirmationVideo');
-                    setupVideoControls(video);
-                } else if(!userData.videoFile) {
-                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
-                    document.getElementById('selectVideoBtnModal')?.addEventListener('click', handleSelectVideo);
-                }
+        function stopCurrentVideo() {
+            if(currentVideo) {
+                currentVideo.pause();
+                currentVideo = null;
             }
         }
         
-        function setupVideoControls(video) {
+        function playVideo(fileUrl) {
+            const container = document.getElementById('videoContainer');
+            if(!container) return;
+            
+            container.innerHTML = `<video id="affirmationVideo" class="affirmation-video" src="${fileUrl}" loop autoplay style="width:100%; height:100%; object-fit:cover;"></video>`;
+            currentVideo = document.getElementById('affirmationVideo');
+            
+            if(currentVideo) {
+                currentVideo.play().catch(e=>console.log('video play error', e));
+            }
+            
+            document.getElementById('videoControls').style.display = 'flex';
+            const video = currentVideo;
             const volSlider = document.getElementById('volumeSlider');
             const volPercent = document.getElementById('volumePercent');
             const muteBtn = document.getElementById('muteBtn');
@@ -404,9 +774,6 @@
                 muted = false;
                 muteBtn.textContent = '🔊';
                 video.muted = false;
-                if(slideshowMusic && !muted && currentMode === 'slideshow') {
-                    slideshowMusic.volume = video.volume;
-                }
             };
             
             muteBtn.onclick = () => {
@@ -427,21 +794,92 @@
             };
         }
 
+        function playSlideshowMode() {
+            const container = document.getElementById('videoContainer');
+            if(!container) return;
+            
+            const photos = userData.photos || [];
+            const dreams = userData.dreams || [];
+            const audios = userData.audios || [];
+            
+            if(photos.length === 0) {
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎥 Добавьте фото в галерею</p><p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px;">✨ Слайдшоу из ваших фото</p></div>';
+                return;
+            }
+            
+            if(slideshowInterval) clearInterval(slideshowInterval);
+            updateSlide();
+            slideshowInterval = setInterval(updateSlide, 500);
+            
+            slideshowMusic = document.getElementById('slideshowMusic');
+            if(slideshowMusic && !musicPlaying) {
+                slideshowMusic.volume = 0.5;
+                slideshowMusic.loop = true;
+                slideshowMusic.play().catch(e=>console.log('music play blocked'));
+                musicPlaying = true;
+            }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                if(btn.dataset.mode === mode) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            if(mode === 'slideshow') {
+                stopCurrentVideo();
+                document.getElementById('videoControls').style.display = 'none';
+                playSlideshowMode();
+            } else if(mode === 'video') {
+                if(slideshowInterval) clearInterval(slideshowInterval);
+                if(slideshowMusic && musicPlaying) {
+                    slideshowMusic.pause();
+                    musicPlaying = false;
+                }
+                
+                if(userData.videoFile) {
+                    playVideo(userData.videoFile);
+                } else {
+                    const container = document.getElementById('videoContainer');
+                    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 250px; flex-direction: column; width: 100%; height: 100%;"><p style="color: rgba(255,255,255,0.5); text-align: center;">🎬 Нет загруженного видео</p><button class="select-video-btn" id="selectVideoBtnModal" style="margin-top: 10px;">📁 Выбрать MP4</button></div>';
+                    document.getElementById('selectVideoBtnModal')?.addEventListener('click', handleSelectVideo);
+                    document.getElementById('videoControls').style.display = 'none';
+                }
+            }
+        }
+
         function playSwipeSound() { const a=document.getElementById('swipeSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
         function playClickSound() { const a=document.getElementById('clickSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
         function playSpaceSound() { const a=document.getElementById('spaceSound'); if(a){a.currentTime=0;a.play().catch(e=>{});} }
 
+        // АФФИРМАЦИИ (30+ для каждого пола)
         const affirmationsMale = [
             "Я достоин всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю силу и уверенность 💪",
             "Деньги текут ко мне легко 💰", "Я здоров и полон энергии ⚡", "Я в безопасности и любим 🌈",
             "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Я достигаю всех целей 🎯",
-            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖"
+            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖",
+            "Моя жизнь наполнена смыслом 🕯️", "Я привлекаю правильных людей 👥", "Мой внутренний свет сияет 🔥",
+            "Я открыт для новых возможностей 🚪", "Моя сила растёт с каждым днём 📈", "Я благодарен за всё 🙏",
+            "Я создаю свою реальность 🎨", "Мой потенциал безграничен ♾️", "Я смело иду вперёд 🦁",
+            "Я привлекаю изобилие во всех формах 💎", "Мои действия приносят плоды 🌳", "Я заслуживаю отдыха и заботы 😌",
+            "Моя карьера развивается 📊", "Я окружён любовью и поддержкой 🤝", "Мой разум спокоен и ясен 🧘",
+            "Я выбираю радость каждый день ☀️", "Я достоин уважения 👑", "Мои ошибки — это уроки 📚",
+            "Я притягиваю здоровье и долголетие 🍃", "Мой дом — место силы 🏠", "Я путешествую легко ✈️"
         ];
+        
         const affirmationsFemale = [
             "Я достойна всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю любовь и свет 💖",
             "Деньги текут ко мне легко 💰", "Я здорова и полна энергии ⚡", "Я в безопасности и любима 🌈",
             "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Я достигаю всех целей 🎯",
-            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖"
+            "Я магнит для чудес ✨", "Мой успех неизбежен 📈", "Я заслуживаю счастья 💖",
+            "Моя жизнь наполнена смыслом 🕯️", "Я привлекаю правильных людей 👥", "Мой внутренний свет сияет 🔥",
+            "Я открыта для новых возможностей 🚪", "Моя красота сияет изнутри 🌸", "Я благодарна за всё 🙏",
+            "Я создаю свою реальность 🎨", "Мой потенциал безграничен ♾️", "Я мягко, но уверенно иду вперёд 🦢",
+            "Я привлекаю изобилие во всех формах 💎", "Мои действия приносят плоды 🌳", "Я заслуживаю отдыха и заботы 😌",
+            "Моя карьера развивается 📊", "Я окружена любовью и поддержкой 🤝", "Мой разум спокоен и ясен 🧘",
+            "Я выбираю радость каждый день ☀️", "Я достойна уважения 👑", "Мои ошибки — это уроки 📚",
+            "Я привлекаю здоровье и долголетие 🍃", "Мой дом — место силы 🏠", "Я путешествую легко ✈️"
         ];
 
         let currentAffirmationInterval = null;
@@ -476,7 +914,6 @@
                 document.getElementById('statDreams').textContent = userData.dreams.length; 
                 saveUserData(); 
                 renderDreamsList();
-                if(slideshowActive && !document.querySelector('#affirmationVideo')) refreshSlideshow();
                 alert('✨ Мечта добавлена из аффирмации!');
             }
         }
@@ -506,12 +943,6 @@
                 startAffirmationCarousel();
                 slideshowActive = true;
                 startSlideshow();
-            });
-            document.getElementById('refreshSlideshowBtn')?.addEventListener('click',()=>{
-                if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) {
-                    refreshSlideshow();
-                    alert('✨ Слайдшоу обновлено');
-                }
             });
             document.getElementById('addRandomDreamBtn')?.addEventListener('click', addRandomDream);
             document.getElementById('addRandomDreamBtn2')?.addEventListener('click', addRandomDream);
@@ -575,7 +1006,6 @@
                             if(!userData.audioNames) userData.audioNames={};
                             userData.audioNames[id]=`Запись ${userData.audios.length}`;
                             saveUserData(); renderAudioList(listId);
-                            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();
                             statusEl.innerHTML='✅ Запись сохранена!';
                         };
                         reader.readAsDataURL(blob);
@@ -603,7 +1033,6 @@
                 if(userData.audioNames) delete userData.audioNames[id];
                 saveUserData();
                 renderAudioList(listId);
-                if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();
             }
         }
         
@@ -675,13 +1104,12 @@
             document.getElementById('statDreams').textContent=userData.dreams.length; 
             saveUserData(); 
             renderDreamsList();
-            if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();
             alert('✨ Мечта сохранена!');
         }
         document.getElementById('addDreamBtn')?.addEventListener('click',addDream);
 
-        function editDream(id){const dream=userData.dreams.find(d=>d.id===id); if(!dream)return; const newText=prompt('Редактировать мечту:',dream.text); if(newText&&newText.trim()){dream.text=newText.trim(); saveUserData(); renderDreamsList(); if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}}
-        function deleteDream(id){if(confirm('Удалить мечту?')){userData.dreams=userData.dreams.filter(d=>d.id!==id); saveUserData(); renderDreamsList(); document.getElementById('statDreams').textContent=userData.dreams.length; if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}}
+        function editDream(id){const dream=userData.dreams.find(d=>d.id===id); if(!dream)return; const newText=prompt('Редактировать мечту:',dream.text); if(newText&&newText.trim()){dream.text=newText.trim(); saveUserData(); renderDreamsList();}}
+        function deleteDream(id){if(confirm('Удалить мечту?')){userData.dreams=userData.dreams.filter(d=>d.id!==id); saveUserData(); renderDreamsList(); document.getElementById('statDreams').textContent=userData.dreams.length;}}
         function renderDreamsList(){
             const container=document.getElementById('dreamsList'); 
             if(!container)return; 
@@ -692,9 +1120,9 @@
 
         function addPhotos(event){
             const files=Array.from(event.target.files); 
-            files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos(); if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}; reader.readAsDataURL(file);});
+            files.forEach(file=>{const reader=new FileReader(); reader.onload=e=>{userData.photos.push({id:Date.now()+Math.random(),data:e.target.result}); saveUserData(); renderPhotos();}; reader.readAsDataURL(file);});
         }
-        function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos(); if(currentMode === 'slideshow' && !document.querySelector('#affirmationVideo')) refreshSlideshow();}
+        function deletePhoto(idx){userData.photos.splice(idx,1); saveUserData(); renderPhotos();}
         function renderPhotos(){
             const grid=document.getElementById('photoGrid'); 
             if(!grid)return; 
@@ -713,7 +1141,12 @@
                     currentVideoURL=URL.createObjectURL(file);
                     userData.videoFile = currentVideoURL;
                     saveUserData();
-                    switchMode('video');
+                    currentMode = 'video';
+                    document.querySelectorAll('.mode-btn').forEach(btn => {
+                        if(btn.dataset.mode === 'video') btn.classList.add('active');
+                        else btn.classList.remove('active');
+                    });
+                    playVideo(currentVideoURL);
                 }
             };
             input.click();
@@ -721,13 +1154,28 @@
         document.getElementById('selectVideoBtn')?.addEventListener('click',handleSelectVideo);
 
         function textToBinary(text){let binary=''; for(let i=0;i<Math.min(text.length,500);i++){binary+=text.charCodeAt(i).toString(2).padStart(8,'0')+' ';} return binary.trim();}
+        
+        function showFullText(text) {
+            const modal = document.createElement('div');
+            modal.className = 'full-text-modal';
+            modal.innerHTML = `
+                <div class="full-text-content">
+                    <p>${escapeHtml(text)}</p>
+                    <button class="close-modal-btn">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.querySelector('.close-modal-btn').onclick = () => modal.remove();
+        }
+        
         function renderHistoryList(){
             const container=document.getElementById('historyList'); 
             if(!container)return; 
             if(!userData.spaceHistory||userData.spaceHistory.length===0){container.innerHTML='<p style="color:rgba(255,255,255,0.5);text-align:center;">История пуста. Отправьте мечту в космос 🚀</p>'; return;}
-            container.innerHTML=userData.spaceHistory.slice().reverse().map(h=>`<div class="history-item"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;"><span style="color:#ffd700;">🚀 #${h.id}</span><span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span><button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Бинарный код</button></div><div style="margin-top:5px; font-size:12px; word-break:break-word;">${escapeHtml(h.dreamsText.substring(0,200))}${h.dreamsText.length>200?'...':''}</div><div id="binary-${h.id}" style="display:none;" class="history-binary"></div></div>`).join('');
+            container.innerHTML=userData.spaceHistory.slice().reverse().map(h=>`<div class="history-item"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;"><span style="color:#ffd700;">🚀 #${h.id}</span><span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span><div><button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Код</button><button class="view-full-text-btn" onclick="showFullText('${escapeHtml(h.dreamsText).replace(/'/g, "\\'")}')">📄 Полный текст</button></div></div><div style="margin-top:5px; font-size:12px; word-break:break-word;">${escapeHtml(h.dreamsText.substring(0,100))}${h.dreamsText.length>100?'...':''}</div><div id="binary-${h.id}" style="display:none;" class="history-binary"></div></div>`).join('');
         }
         window.showBinaryCode=function(id){const history=userData.spaceHistory.find(h=>h.id===id); if(history){const div=document.getElementById(`binary-${id}`); if(div.style.display==='none'){div.innerHTML=`<strong>Бинарный код:</strong><br>${history.binaryCode}`; div.style.display='block';}else{div.style.display='none';}}};
+        window.showFullText = showFullText;
         
         function addSpaceLog(message){
             const log=document.getElementById('spaceLog');
