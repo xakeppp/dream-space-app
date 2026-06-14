@@ -304,7 +304,7 @@
             height: 100%;
             object-fit: cover;
         }
-        .photo-item .delete-photo {
+        .delete-photo {
             position: absolute;
             top: 2px;
             right: 2px;
@@ -315,9 +315,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 12px;
             cursor: pointer;
             color: #ff6b9d;
+            z-index: 2;
         }
         .add-photo {
             display: flex;
@@ -455,30 +456,12 @@
             cursor: pointer;
             margin-left: 10px;
         }
-        
-        .delete-photo {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            cursor: pointer;
-            color: #ff6b9d;
-            z-index: 2;
-        }
     </style>
 </head>
 <body>
 
     <canvas id="magicCanvas"></canvas>
 
-    <!-- Экран 1: Свайп (замедленный) -->
     <div id="screen-swipe" class="screen active">
         <h1>✨ Пробуждение ✨</h1>
         <div class="card">
@@ -492,7 +475,6 @@
         <button class="btn" id="btnToProfile" disabled>Далее →</button>
     </div>
 
-    <!-- Экран 2: Анкета -->
     <div id="screen-profile" class="screen">
         <h1>🌟 Анкета Души</h1>
         <div class="card">
@@ -507,7 +489,6 @@
         <button class="btn" id="btnToVoice">Далее →</button>
     </div>
 
-    <!-- Экран 3: Голос -->
     <div id="screen-voice" class="screen">
         <h1>🎤 Голос Мечты</h1>
         <div class="card">
@@ -521,7 +502,6 @@
         <button class="btn" id="btnToMain">Войти 🚀</button>
     </div>
 
-    <!-- Главный экран -->
     <div id="screen-main" class="screen">
         <h1>🌌 <span id="mainUserName">Путник</span></h1>
         
@@ -714,7 +694,6 @@
             requestAnimationFrame(animateCanvas);
         }
 
-        // ЗВУКИ
         function playSwipeSound() {
             const audio = document.getElementById('swipeSound');
             if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log('swipe sound blocked')); }
@@ -728,7 +707,6 @@
             if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log('space sound blocked')); }
         }
 
-        // АФФИРМАЦИИ
         const affirmationsMale = [
             "Я достоин всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю силу и уверенность 💪",
             "Деньги текут ко мне легко 💰", "Я здоров и полон энергии ⚡", "Я в безопасности и любим 🌈",
@@ -763,7 +741,6 @@
             currentAffirmationInterval = setInterval(updateAffirmationCarousel, 3000);
         }
 
-        // ДАННЫЕ
         let entropyData = [];
         let swipeCompleted = false;
         let mediaRecorder = null;
@@ -800,14 +777,15 @@
             });
         });
 
-        // СВАЙП (ЗАМЕДЛЕННЫЙ - 200 точек)
         const swipeArea = document.getElementById('swipeArea');
         const entropyFill = document.getElementById('entropyFill');
         const entropyText = document.getElementById('entropyText');
         const btnToProfile2 = document.getElementById('btnToProfile');
         
         let pointsCollected = 0;
-        const requiredPoints = 200; // Медленнее - 200 точек
+        const requiredPoints = 1000;
+
+        let isSwiping = false;
 
         function handleSwipeStart(e) {
             if(swipeCompleted) return;
@@ -822,7 +800,6 @@
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
-            // Шлейф
             for(let i = 0; i < 3; i++) {
                 trailParticles.push(new TrailParticle(clientX + (Math.random() - 0.5) * 25, clientY + (Math.random() - 0.5) * 25));
             }
@@ -830,7 +807,7 @@
             entropyData.push({ x: clientX, y: clientY, time: Date.now() });
             pointsCollected++;
             
-            if(pointsCollected % 12 === 0) playSwipeSound();
+            if(pointsCollected % 20 === 0) playSwipeSound();
             
             const percent = Math.min(100, Math.floor((pointsCollected / requiredPoints) * 100));
             entropyFill.style.width = percent + '%';
@@ -883,7 +860,6 @@
             showScreen('screen-voice');
         });
 
-        // ЗАПИСЬ
         function setupRecording(recordBtnId, stopBtnId, statusId, listId) {
             const recordBtn = document.getElementById(recordBtnId);
             const stopBtn = document.getElementById(stopBtnId);
@@ -995,6 +971,10 @@
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                     document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
                     if(tab.dataset.tab === 'home') startAffirmationCarousel();
+                    if(tab.dataset.tab === 'dreams') {
+                        renderDreamsList();
+                        renderPhotos();
+                    }
                     if(tab.dataset.tab === 'space') renderHistoryList();
                 });
             });
@@ -1054,13 +1034,21 @@
                             <button onclick="deleteDream(${dream.id})" style="background:none;border:none;color:#ff6b9d;cursor:pointer;">🗑️</button>
                         </div>
                     </div>
-                    <p>${dream.text}</p>
+                    <p>${escapeHtml(dream.text)}</p>
                     <div style="font-size:10px; color:rgba(255,255,255,0.3);">${new Date(dream.date).toLocaleDateString()}</div>
                 </div>
             `).join('');
         }
 
-        // ФОТО - БЕЗ ОГРАНИЧЕНИЙ
+        function escapeHtml(text) {
+            return text.replace(/[&<>]/g, function(m) {
+                if(m === '&') return '&amp;';
+                if(m === '<') return '&lt;';
+                if(m === '>') return '&gt;';
+                return m;
+            });
+        }
+
         function addPhotos(event) {
             const files = Array.from(event.target.files);
             files.forEach(file => {
@@ -1084,6 +1072,10 @@
             const grid = document.getElementById('photoGrid');
             if(!grid) return;
             document.getElementById('photoCount').textContent = userData.photos.length;
+            if(userData.photos.length === 0) {
+                grid.innerHTML = `<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)"></label>`;
+                return;
+            }
             const photosHtml = userData.photos.map((p, idx) => `
                 <div class="photo-item">
                     <div class="delete-photo" onclick="deletePhoto(${idx})">✖</div>
@@ -1157,7 +1149,7 @@
                         <span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span>
                         <button class="view-binary-btn" onclick="window.showBinaryCode(${h.id})">📟 Бинарный код</button>
                     </div>
-                    <div style="margin-top:5px; font-size:12px;">${h.dreamsText.substring(0, 100)}${h.dreamsText.length > 100 ? '...' : ''}</div>
+                    <div style="margin-top:5px; font-size:12px;">${escapeHtml(h.dreamsText.substring(0, 100))}${h.dreamsText.length > 100 ? '...' : ''}</div>
                     <div id="binary-${h.id}" style="display:none;" class="history-binary"></div>
                 </div>
             `).join('');
