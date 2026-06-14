@@ -67,7 +67,7 @@
 
         #swipeArea {
             width: 100%;
-            height: 350px;
+            height: 400px;
             background: rgba(255, 255, 255, 0.05);
             border: 2px dashed rgba(255, 215, 0, 0.5);
             border-radius: 20px;
@@ -79,12 +79,19 @@
             cursor: crosshair;
             position: relative;
             overflow: hidden;
+            transition: all 0.3s;
         }
 
         #swipeArea.swiping {
             border-color: #ffd700;
             background: rgba(255, 215, 0, 0.1);
-            box-shadow: 0 0 30px rgba(255,215,0,0.3);
+            box-shadow: 0 0 40px rgba(255,215,0,0.4);
+        }
+
+        #swipeArea.completed {
+            border-color: #00ffaa;
+            background: rgba(0,255,170,0.1);
+            box-shadow: 0 0 40px rgba(0,255,170,0.4);
         }
 
         .swipe-text {
@@ -218,8 +225,12 @@
             50% { opacity: 0; }
         }
 
-        .audio-list { margin-top: 20px; max-height: 300px; overflow-y: auto; }
-        .audio-item {
+        .audio-list, .dreams-list, .history-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .audio-item, .dream-item, .history-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 12px;
             border-radius: 12px;
@@ -273,7 +284,7 @@
         .stat-label { font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 5px; }
 
         .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; max-height: 300px; overflow-y: auto; }
-        .photo-item { aspect-ratio: 1; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; }
+        .photo-item { aspect-ratio: 1; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; cursor: pointer; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; }
         .add-photo {
             display: flex;
@@ -285,13 +296,6 @@
         }
         .hidden { display: none !important; }
         .progress-text { text-align: center; margin-top: 10px; color: #ffd700; font-size: 14px; }
-
-        .dream-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
 
         .video-container {
             border-radius: 20px;
@@ -338,8 +342,8 @@
             border-radius: 15px;
             width: 90%;
             max-width: 500px;
-            height: 200px;
-            overflow: hidden;
+            height: 250px;
+            overflow: auto;
             border: 1px solid #ffd700;
         }
         .binary-line { font-family: monospace; font-size: 12px; line-height: 1.4; }
@@ -395,22 +399,43 @@
             padding: 8px 12px;
             width: auto;
         }
+        
+        .history-binary {
+            font-family: monospace;
+            font-size: 10px;
+            color: #00ffaa;
+            margin-top: 8px;
+            word-break: break-all;
+            max-height: 100px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .view-binary-btn {
+            background: rgba(0,255,170,0.2);
+            border: 1px solid #00ffaa;
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
 
     <canvas id="magicCanvas"></canvas>
 
-    <!-- Экран 1: Свайп (10 секунд) -->
+    <!-- Экран 1: Свайп -->
     <div id="screen-swipe" class="screen active">
         <h1>✨ Пробуждение ✨</h1>
         <div class="card">
-            <p style="text-align: center; margin-bottom: 20px;">🌌 Настрой свою уникальную частоту.<br>Води пальцем 10 секунд</p>
+            <p style="text-align: center; margin-bottom: 20px;">🌌 Настрой свою уникальную частоту.<br>Води пальцем, пока не заполнится</p>
             <div id="swipeArea">
                 <div class="swipe-text">👆 Води пальцем здесь</div>
                 <div class="entropy-bar"><div id="entropyFill" class="entropy-fill"></div></div>
                 <div class="progress-text" id="entropyText">0% настроено</div>
-                <div class="progress-text" id="timerText" style="font-size: 12px; color: #ffd700;">Осталось: 10 сек</div>
             </div>
         </div>
         <button class="btn" id="btnToProfile" disabled>Далее →</button>
@@ -482,7 +507,7 @@
                 <h2>💭 Мои мечты</h2>
                 <textarea id="dreamText" rows="3" placeholder="Опиши мечту..."></textarea>
                 <button class="btn" id="addDreamBtn">➕ Добавить мечту</button>
-                <div id="dreamsList" style="margin-top: 20px;"></div>
+                <div class="dreams-list" id="dreamsList"></div>
                 <h2>🖼️ Галерея (<span id="photoCount">0</span>/20)</h2>
                 <div class="photo-grid" id="photoGrid"></div>
             </div>
@@ -504,7 +529,11 @@
             <div class="card">
                 <h2>🚀 Отправка в Космос</h2>
                 <button class="btn" id="sendToSpaceBtn">🌠 Отправить мечты в космос</button>
-                <div id="spaceLog" style="margin-top: 20px; font-size: 13px; max-height: 200px; overflow-y: auto;"></div>
+                <div id="spaceLog" style="margin-top: 20px; font-size: 13px; max-height: 150px; overflow-y: auto;"></div>
+            </div>
+            <div class="card">
+                <h2>📜 История отправленных мечт</h2>
+                <div class="history-list" id="historyList"></div>
             </div>
         </div>
 
@@ -543,7 +572,6 @@
         <div class="tab-item" data-tab="profile"><span class="tab-icon">⭐</span>ПРОФИЛЬ</div>
     </div>
 
-    <!-- Звуки из папки sounds/ -->
     <audio id="swipeSound" preload="auto" style="display:none;"><source src="sounds/1.mp3" type="audio/mpeg"></audio>
     <audio id="clickSound" preload="auto" style="display:none;"><source src="sounds/2.mp3" type="audio/mpeg"></audio>
     <audio id="spaceSound" preload="auto" style="display:none;"><source src="sounds/3.mp3" type="audio/mpeg"></audio>
@@ -565,8 +593,8 @@
             constructor() {
                 this.x = Math.random() * canvasWidth;
                 this.y = Math.random() * canvasHeight;
-                this.vx = (Math.random() - 0.5) * 1;
-                this.vy = (Math.random() - 0.5) * 1;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
                 this.size = Math.random() * 3 + 1;
                 this.color = ['#ffd700', '#ff6b9d', '#c06fff', '#00ffff'][Math.floor(Math.random() * 4)];
                 this.alpha = Math.random() * 0.6 + 0.2;
@@ -593,27 +621,34 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5 - 1;
                 this.life = 1.0;
-                this.size = Math.random() * 8 + 4;
-                this.color = '#ffd700';
+                this.size = Math.random() * 12 + 6;
+                this.color = `hsl(${Math.random() * 60 + 40}, 100%, 60%)`;
             }
             update() {
+                this.x += this.vx;
+                this.y += this.vy;
                 this.life -= 0.02;
-                this.size *= 0.98;
+                this.size *= 0.97;
             }
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.life * 0.8;
+                ctx.globalAlpha = this.life * 0.7;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color;
                 ctx.fill();
+                ctx.shadowBlur = 0;
                 ctx.globalAlpha = 1;
             }
         }
 
         function initBgParticles() {
             bgParticles = [];
-            for(let i = 0; i < 30; i++) bgParticles.push(new BgParticle());
+            for(let i = 0; i < 40; i++) bgParticles.push(new BgParticle());
         }
 
         function animateCanvas() {
@@ -642,52 +677,27 @@
             if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log('space sound blocked')); }
         }
 
-        // АФФИРМАЦИИ ПО РОДУ
+        // АФФИРМАЦИИ
         const affirmationsMale = [
-            "Я достоин всего лучшего 💫",
-            "Мои мечты реальны 🚀",
-            "Я излучаю силу и уверенность 💪",
-            "Деньги текут ко мне легко 💰",
-            "Я здоров и полон энергии ⚡",
-            "Я в безопасности и любим 🌈",
-            "Каждый день я становлюсь лучше 🌟",
-            "Я притягиваю удачу 🍀",
-            "Моя жизнь наполнена радостью 😊",
-            "Я достигаю всех своих целей 🎯",
-            "Я магнит для чудес ✨",
-            "Мой успех неизбежен 📈",
-            "Я заслуживаю счастья 💖",
-            "Вселенная поддерживает меня 🌌",
-            "Я сияю как звезда ⭐"
+            "Я достоин всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю силу и уверенность 💪",
+            "Деньги текут ко мне легко 💰", "Я здоров и полон энергии ⚡", "Я в безопасности и любим 🌈",
+            "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Моя жизнь наполнена радостью 😊",
+            "Я достигаю всех своих целей 🎯", "Я магнит для чудес ✨", "Мой успех неизбежен 📈",
+            "Я заслуживаю счастья 💖", "Вселенная поддерживает меня 🌌", "Я сияю как звезда ⭐"
         ];
-
         const affirmationsFemale = [
-            "Я достойна всего лучшего 💫",
-            "Мои мечты реальны 🚀",
-            "Я излучаю любовь и свет 💖",
-            "Деньги текут ко мне легко 💰",
-            "Я здорова и полна энергии ⚡",
-            "Я в безопасности и любима 🌈",
-            "Каждый день я становлюсь лучше 🌟",
-            "Я притягиваю удачу 🍀",
-            "Моя жизнь наполнена радостью 😊",
-            "Я достигаю всех своих целей 🎯",
-            "Я магнит для чудес ✨",
-            "Мой успех неизбежен 📈",
-            "Я заслуживаю счастья 💖",
-            "Вселенная поддерживает меня 🌌",
-            "Я сияю как звезда ⭐"
+            "Я достойна всего лучшего 💫", "Мои мечты реальны 🚀", "Я излучаю любовь и свет 💖",
+            "Деньги текут ко мне легко 💰", "Я здорова и полна энергии ⚡", "Я в безопасности и любима 🌈",
+            "Каждый день я становлюсь лучше 🌟", "Я притягиваю удачу 🍀", "Моя жизнь наполнена радостью 😊",
+            "Я достигаю всех своих целей 🎯", "Я магнит для чудес ✨", "Мой успех неизбежен 📈",
+            "Я заслуживаю счастья 💖", "Вселенная поддерживает меня 🌌", "Я сияю как звезда ⭐"
         ];
 
         let currentAffirmationInterval = null;
         let currentGender = 'male';
 
-        function getAffirmationsByGender() {
-            return currentGender === 'male' ? affirmationsMale : affirmationsFemale;
-        }
-
         function getRandomAffirmation() {
-            const affs = getAffirmationsByGender();
+            const affs = currentGender === 'male' ? affirmationsMale : affirmationsFemale;
             return affs[Math.floor(Math.random() * affs.length)];
         }
 
@@ -699,29 +709,24 @@
         function startAffirmationCarousel() {
             if(currentAffirmationInterval) clearInterval(currentAffirmationInterval);
             updateAffirmationCarousel();
-            currentAffirmationInterval = setInterval(() => {
-                updateAffirmationCarousel();
-            }, 3000);
+            currentAffirmationInterval = setInterval(updateAffirmationCarousel, 3000);
         }
 
         // ДАННЫЕ
         let entropyData = [];
-        let entropyPercent = 0;
-        let isSwiping = false;
-        let swipeStartTime = 0;
-        let swipeTimer = null;
+        let isCompleted = false;
+        let swipeCompleted = false;
         let mediaRecorder = null;
         let audioChunks = [];
         let isRecording = false;
         let userData = {
             key: null, name: '', gender: 'male',
             dreams: [], photos: [], audios: [], sentToSpace: 0, registered: false,
-            audioNames: {}
+            audioNames: {}, spaceHistory: []
         };
 
         let currentVideoURL = null;
 
-        // ИНИЦИАЛИЗАЦИЯ
         window.addEventListener('DOMContentLoaded', () => {
             resizeCanvas();
             initBgParticles();
@@ -745,54 +750,50 @@
             });
         });
 
-        // СВАЙП (10 секунд)
+        // СВАЙП
         const swipeArea = document.getElementById('swipeArea');
         const entropyFill = document.getElementById('entropyFill');
         const entropyText = document.getElementById('entropyText');
-        const timerText = document.getElementById('timerText');
         const btnToProfile2 = document.getElementById('btnToProfile');
-
-        let requiredPoints = 100; // 100 точек ~ 10 секунд при хорошей скорости
+        
         let pointsCollected = 0;
+        const requiredPoints = 120;
 
         function handleSwipeStart(e) {
+            if(swipeCompleted) return;
             isSwiping = true;
             swipeArea.classList.add('swiping');
-            pointsCollected = 0;
-            entropyPercent = 0;
-            entropyFill.style.width = '0%';
-            entropyText.textContent = '0% настроено';
-            if(timerText) timerText.textContent = 'Осталось: 10 сек';
             e.preventDefault();
         }
 
         function handleSwipeMove(e) {
-            if (!isSwiping) return;
+            if(swipeCompleted || !isSwiping) return;
             e.preventDefault();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
-            // Добавляем шлейф
-            trailParticles.push(new TrailParticle(clientX, clientY));
+            for(let i = 0; i < 3; i++) {
+                trailParticles.push(new TrailParticle(clientX + (Math.random() - 0.5) * 20, clientY + (Math.random() - 0.5) * 20));
+            }
             
             entropyData.push({ x: clientX, y: clientY, time: Date.now() });
             pointsCollected++;
             
-            // Звук при каждом движении (не слишком часто)
-            if(pointsCollected % 5 === 0) playSwipeSound();
+            if(pointsCollected % 8 === 0) playSwipeSound();
             
-            entropyPercent = Math.min(100, Math.floor((pointsCollected / requiredPoints) * 100));
-            entropyFill.style.width = entropyPercent + '%';
-            entropyText.textContent = entropyPercent + '% настроено';
+            const percent = Math.min(100, Math.floor((pointsCollected / requiredPoints) * 100));
+            entropyFill.style.width = percent + '%';
+            entropyText.textContent = percent + '% настроено';
             
-            const remainingSec = Math.max(0, Math.ceil((requiredPoints - pointsCollected) / 10));
-            if(timerText) timerText.textContent = `Осталось: ${remainingSec} сек`;
-            
-            if (entropyPercent >= 100 && btnToProfile2.disabled) {
+            if (pointsCollected >= requiredPoints && !swipeCompleted) {
+                swipeCompleted = true;
+                isSwiping = false;
+                swipeArea.classList.remove('swiping');
+                swipeArea.classList.add('completed');
                 btnToProfile2.disabled = false;
                 btnToProfile2.textContent = '✨ Готово! Далее →';
+                entropyText.textContent = '100% настроено! ✅';
                 playClickSound();
-                if(timerText) timerText.textContent = '✅ Настроено!';
             }
         }
 
@@ -805,7 +806,6 @@
             swipeArea.addEventListener('touchstart', handleSwipeStart, { passive: false });
             swipeArea.addEventListener('touchmove', handleSwipeMove, { passive: false });
             swipeArea.addEventListener('touchend', handleSwipeEnd);
-            // Для мыши (компьютер)
             swipeArea.addEventListener('mousedown', handleSwipeStart);
             swipeArea.addEventListener('mousemove', handleSwipeMove);
             swipeArea.addEventListener('mouseup', handleSwipeEnd);
@@ -815,12 +815,11 @@
             const raw = JSON.stringify({ entropy: entropyData, time: Date.now() });
             const encoder = new TextEncoder();
             const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(raw));
-            const fullKey = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-            return fullKey;
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
         btnToProfile2.addEventListener('click', async () => {
-            if (entropyPercent < 100) return;
+            if(!swipeCompleted) return;
             userData.key = await generateKey();
             showScreen('screen-profile');
         });
@@ -833,7 +832,7 @@
             showScreen('screen-voice');
         });
 
-        // ЗАПИСЬ ГОЛОСА
+        // ЗАПИСЬ
         function setupRecording(recordBtnId, stopBtnId, statusId, listId) {
             const recordBtn = document.getElementById(recordBtnId);
             const stopBtn = document.getElementById(stopBtnId);
@@ -883,7 +882,7 @@
         }
 
         function renameAudio(id, listId) {
-            const newName = prompt('Введите новое имя для записи:', userData.audioNames?.[id] || `Запись ${id}`);
+            const newName = prompt('Введите новое имя:', userData.audioNames?.[id] || `Запись ${id}`);
             if(newName && newName.trim()) {
                 if(!userData.audioNames) userData.audioNames = {};
                 userData.audioNames[id] = newName.trim();
@@ -933,6 +932,7 @@
             renderAudioList('audioListMain');
             renderPhotos();
             renderDreamsList();
+            renderHistoryList();
             initTabs();
         }
 
@@ -944,6 +944,7 @@
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                     document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
                     if(tab.dataset.tab === 'home') startAffirmationCarousel();
+                    if(tab.dataset.tab === 'space') renderHistoryList();
                 });
             });
         }
@@ -1003,6 +1004,7 @@
                         </div>
                     </div>
                     <p>${dream.text}</p>
+                    <div style="font-size:10px; color:rgba(255,255,255,0.3);">${new Date(dream.date).toLocaleDateString()}</div>
                 </div>
             `).join('');
         }
@@ -1026,12 +1028,12 @@
 
         function renderPhotos() {
             const grid = document.getElementById('photoGrid');
+            if(!grid) return;
             document.getElementById('photoCount').textContent = userData.photos.length;
             const photosHtml = userData.photos.map(p => `<div class="photo-item"><img src="${p.data}"></div>`).join('');
             grid.innerHTML = photosHtml + `<label class="photo-item add-photo">➕<input type="file" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)"></label>`;
         }
 
-        // ВИДЕО
         function handleSelectVideo() {
             const input = document.createElement('input');
             input.type = 'file';
@@ -1074,85 +1076,108 @@
 
         document.getElementById('selectVideoBtn').addEventListener('click', handleSelectVideo);
 
-        // ОТПРАВКА В КОСМОС (рандомно 3 из 7 сообщений)
         function textToBinary(text) {
             let binary = '';
-            for(let i=0; i<Math.min(text.length, 100); i++) {
+            for(let i=0; i<Math.min(text.length, 200); i++) {
                 binary += text.charCodeAt(i).toString(2).padStart(8,'0') + ' ';
             }
             return binary.trim();
+        }
+
+        function renderHistoryList() {
+            const container = document.getElementById('historyList');
+            if(!container) return;
+            if(!userData.spaceHistory || userData.spaceHistory.length === 0) {
+                container.innerHTML = '<p style="color:rgba(255,255,255,0.5);text-align:center;">История пуста. Отправьте мечту в космос 🚀</p>';
+                return;
+            }
+            container.innerHTML = userData.spaceHistory.slice().reverse().map(h => `
+                <div class="history-item">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="color:#ffd700;">🚀 #${h.id}</span>
+                        <span style="font-size:11px;">${new Date(h.date).toLocaleString()}</span>
+                        <button class="view-binary-btn" onclick="showBinaryCode(${h.id})">📟 Бинарный код</button>
+                    </div>
+                    <div style="margin-top:5px; font-size:12px;">${h.dreamsText.substring(0, 100)}${h.dreamsText.length > 100 ? '...' : ''}</div>
+                    <div id="binary-${h.id}" style="display:none;" class="history-binary"></div>
+                </div>
+            `).join('');
+        }
+
+        window.showBinaryCode = function(id) {
+            const history = userData.spaceHistory.find(h => h.id === id);
+            if(history) {
+                const div = document.getElementById(`binary-${id}`);
+                if(div.style.display === 'none') {
+                    div.innerHTML = `<strong>Бинарный код:</strong><br>${history.binaryCode}`;
+                    div.style.display = 'block';
+                } else {
+                    div.style.display = 'none';
+                }
+            }
         }
 
         async function sendToSpace() {
             if(userData.dreams.length === 0) { alert('Сначала добавь мечту'); return; }
             playSpaceSound();
             
+            const allDreamsText = userData.dreams.map(d => d.text).join(' | ');
+            const binaryCode = textToBinary(allDreamsText);
+            
+            const spaceMessage = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                dreamsText: allDreamsText,
+                binaryCode: binaryCode,
+                dreamCount: userData.dreams.length
+            };
+            
+            if(!userData.spaceHistory) userData.spaceHistory = [];
+            userData.spaceHistory.push(spaceMessage);
+            
             const overlay = document.createElement('div');
             overlay.className = 'space-overlay';
-            
-            const allMessages = [
-                "🌌 МЕЧТЫ ПРЕВРАЩАЮТСЯ В БИТЫ",
-                "📡 СИГНАЛ ОТПРАВЛЕН В КОСМОС",
-                "✨ ДАННЫЕ УХОДЯТ В БЕСКОНЕЧНОСТЬ",
-                "🚀 ПЕРЕДАНО НА ЧАСТОТЕ 7.83 ГЦ",
-                "⭐ ОРБИТА ДОСТИГНУТА",
-                "📡 СПУТНИК NOAA-19 ПРИНЯЛ СИГНАЛ",
-                "💫 МЕЧТА ЗАПИСАНА В ХРОНИКИ ВСЕЛЕННОЙ"
-            ];
-            
-            // Берём случайные 3 сообщения
-            const shuffled = [...allMessages];
-            for(let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            const selectedMessages = shuffled.slice(0, 3);
-            
+            const messages = ["🌌 МЕЧТЫ В БИТЫ", "📡 СИГНАЛ ОТПРАВЛЕН", "✨ В БЕСКОНЕЧНОСТЬ", "🚀 ЧАСТОТА 7.83 ГЦ", "⭐ ОРБИТА ДОСТИГНУТА"];
             overlay.innerHTML = `
                 <div style="color:#ffd700;font-size:22px;margin-bottom:20px;">✨ ОТПРАВКА В КОСМОС ✨</div>
                 <div class="binary-runner" id="binaryRunner"></div>
                 <div style="margin-top:30px;color:#00ffaa;text-align:center;" id="statusMessage">⚡ Преобразование...</div>
-                <div style="margin-top:20px;text-align:center;color:rgba(255,255,255,0.7);" id="infoMessage"></div>
             `;
             document.body.appendChild(overlay);
             
             const runnerDiv = document.getElementById('binaryRunner');
             const statusDiv = document.getElementById('statusMessage');
-            const infoDiv = document.getElementById('infoMessage');
-            
-            let allText = userData.dreams.map(d=>d.text).join(' | ');
-            if(!allText) allText = userData.name + ' отправляет мечту';
-            const binaryArray = textToBinary(allText).split(' ');
+            const binaryArray = binaryCode.split(' ');
             let index = 0;
             let running = '';
             
             function animateBinary() {
                 if(index < binaryArray.length) {
                     running = binaryArray[index] + ' ' + running;
-                    if(running.length > 60) running = running.substring(0,60);
+                    if(running.length > 80) running = running.substring(0,80);
                     runnerDiv.innerHTML = `<div class="binary-line">${running}</div><div class="binary-line" style="color:#ff6b9d;">${binaryArray[index]} →</div>`;
                     index++;
-                    setTimeout(animateBinary, 25);
+                    setTimeout(animateBinary, 20);
                 } else {
                     let msgIndex = 0;
                     function showMessages() {
-                        if(msgIndex < selectedMessages.length) {
-                            statusDiv.innerHTML = selectedMessages[msgIndex];
-                            infoDiv.innerHTML += selectedMessages[msgIndex] + '<br>';
+                        if(msgIndex < messages.length) {
+                            statusDiv.innerHTML = messages[msgIndex];
                             msgIndex++;
-                            setTimeout(showMessages, 1000);
+                            setTimeout(showMessages, 700);
                         } else {
                             setTimeout(() => {
                                 overlay.remove();
                                 userData.sentToSpace++;
                                 document.getElementById('statSent').textContent = userData.sentToSpace;
                                 saveUserData();
+                                renderHistoryList();
                                 const log = document.getElementById('spaceLog');
                                 const time = new Date().toLocaleTimeString('ru');
                                 log.innerHTML = `🚀 ${time} — Мечта #${userData.sentToSpace} отправлена в космос!<br>` + log.innerHTML;
                                 if(navigator.vibrate) navigator.vibrate(200);
                                 alert('🌠 Мечты отправлены в космос!\n📡 Ожидайте исполнения в течение 28 дней');
-                            }, 1500);
+                            }, 1000);
                         }
                     }
                     showMessages();
@@ -1163,7 +1188,6 @@
 
         document.getElementById('sendToSpaceBtn').addEventListener('click', sendToSpace);
 
-        // ПРОФИЛЬ
         function exportProfile() {
             const dataStr = JSON.stringify(userData);
             const blob = new Blob([dataStr], {type:'application/json'});
@@ -1173,7 +1197,7 @@
             a.download = `dream_backup_${Date.now()}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            alert('💾 Бэкап сохранён в загрузки');
+            alert('💾 Бэкап сохранён');
         }
 
         function importProfile(file) {
@@ -1194,9 +1218,9 @@
         }
 
         function resetProfile() {
-            const name = prompt('⚠️ СБРОС ВСЕХ ДАННЫХ\n\nЧтобы подтвердить, введите ваше имя:', '');
+            const name = prompt('⚠️ СБРОС ВСЕХ ДАННЫХ\n\nВведите ваше имя для подтверждения:', '');
             if(name === userData.name) {
-                if(confirm('ВСЕ мечты, фото, записи будут УДАЛЕНЫ безвозвратно. Продолжить?')) {
+                if(confirm('ВСЕ данные будут УДАЛЕНЫ безвозвратно. Продолжить?')) {
                     localStorage.removeItem('happiness_app_user');
                     alert('✅ Все данные сброшены. Приложение перезагрузится.');
                     location.reload();
@@ -1208,25 +1232,19 @@
 
         function copyKey() {
             if(userData.key) {
-                navigator.clipboard.writeText(userData.key).then(() => {
-                    alert('✅ Ключ скопирован в буфер обмена!');
-                }).catch(() => alert('❌ Не удалось скопировать'));
-            } else {
-                alert('Ключ ещё не сгенерирован');
-            }
+                navigator.clipboard.writeText(userData.key).then(() => alert('✅ Ключ скопирован!'));
+            } else alert('Ключ ещё не сгенерирован');
         }
 
         function restoreFromKey() {
             const inputKey = document.getElementById('pasteKeyInput').value.trim();
-            if(!inputKey) { alert('Введите ключ для восстановления'); return; }
-            if(inputKey.length === 64) { // SHA-256 длина
+            if(!inputKey) { alert('Введите ключ'); return; }
+            if(inputKey.length === 64) {
                 userData.key = inputKey;
                 saveUserData();
-                alert('✅ Ключ восстановлен! Перезапустите приложение.');
+                alert('✅ Ключ восстановлен! Перезапустите.');
                 location.reload();
-            } else {
-                alert('❌ Неверный формат ключа');
-            }
+            } else alert('❌ Неверный формат ключа (64 символа)');
         }
 
         document.getElementById('exportBtn').addEventListener('click', exportProfile);
@@ -1237,7 +1255,7 @@
             if(e.target.files[0]) importProfile(e.target.files[0]);
         });
         document.getElementById('resetBtn').addEventListener('click', resetProfile);
-        document.getElementById('subscribeBtn').addEventListener('click', () => alert('💎 Подписка 10₽/день\nОплата через СБП, карты, крипту'));
+        document.getElementById('subscribeBtn').addEventListener('click', () => alert('💎 Подписка 10₽/день\nОплата: СБП, карты, крипта'));
         document.getElementById('copyKeyBtn').addEventListener('click', copyKey);
         document.getElementById('restoreKeyBtn').addEventListener('click', restoreFromKey);
 
